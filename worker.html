@@ -22,10 +22,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-login{width:100%;padding:12px;background:var(--yw);color:var(--bk);border:none;border-radius:6px;font-size:15px;font-weight:800;cursor:pointer;margin-top:6px}
 .btn-login:hover{background:var(--yw-d)}.btn-login:disabled{opacity:.5}
 .login-err{color:#f87171;font-size:13px;margin-top:10px;text-align:center;min-height:18px}
-.hdr{background:var(--bk);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:58px;border-bottom:3px solid var(--yw);position:sticky;top:0;z-index:100}
-.hdr-brand{color:var(--yw);font-size:19px;font-weight:900;letter-spacing:-.5px}
-.hdr-brand .s{display:block;font-size:8px;color:#666;letter-spacing:2px;font-weight:400;margin-top:-3px}
-.hdr-r{display:flex;align-items:center;gap:8px}
+.hdr{background:var(--bk);display:grid;grid-template-columns:180px 1fr 180px;align-items:center;height:80px;border-bottom:3px solid var(--yw);position:sticky;top:0;z-index:100}
+.hdr-brand{display:flex;align-items:center;justify-content:flex-start}.hdr-brand img{max-height:64px;max-width:160px;object-fit:contain}
+
+.hdr-r{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
 .role-b{background:var(--yw);color:var(--bk);font-size:10px;font-weight:900;padding:4px 9px;border-radius:11px;text-transform:uppercase}
 .ub{font-size:12px;color:#bbb;background:var(--bk2);padding:4px 11px;border-radius:12px;border:1px solid #3a3a3a}
 .btn-logout{background:none;border:1px solid #444;padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;color:#888;font-weight:700}
@@ -113,7 +113,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
 <!-- APP -->
 <div id="appView" style="display:none">
 <div class="hdr">
-  <div class="hdr-brand"><img src="logo.png" style="height:34px;max-width:160px;object-fit:contain" alt="studio55" onerror="this.outerHTML='<span style=&quot;color:var(--yw);font-size:19px;font-weight:900&quot;>studio55</span>'"></div>
+  <div class="hdr-brand"><img src="logo.png" style="max-height:64px;max-width:160px;object-fit:contain;padding:8px 12px" alt="studio55" onerror="this.outerHTML='<span style=&quot;color:var(--yw);font-size:22px;font-weight:900;padding:0 12px&quot;>studio55</span>'"></div>
   <div class="hdr-r">
     <span class="role-b" id="roleBadge">pracownik</span>
     <span class="ub" id="userLabel"></span>

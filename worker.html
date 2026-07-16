@@ -22,15 +22,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn-login{width:100%;padding:12px;background:var(--yw);color:var(--bk);border:none;border-radius:6px;font-size:15px;font-weight:800;cursor:pointer;margin-top:6px}
 .btn-login:hover{background:var(--yw-d)}.btn-login:disabled{opacity:.5}
 .login-err{color:#f87171;font-size:13px;margin-top:10px;text-align:center;min-height:18px}
-.hdr{background:var(--bk);display:grid;grid-template-columns:180px 1fr 180px;align-items:center;height:80px;border-bottom:3px solid var(--yw);position:sticky;top:0;z-index:100}
-.hdr-brand{display:flex;align-items:center;justify-content:flex-start}.hdr-brand img{max-height:64px;max-width:160px;object-fit:contain}
+.hdr{background:var(--bk);display:flex;align-items:center;justify-content:flex-end;gap:8px;height:46px;border-bottom:2px solid var(--yw);position:sticky;top:0;z-index:100;padding:0 16px}
+.layout{display:grid;grid-template-columns:160px 1fr;min-height:calc(100vh - 46px)}
+.logo-col{background:#111;display:flex;align-items:flex-start;justify-content:center;padding:20px 8px;position:sticky;top:46px;height:calc(100vh - 46px)}
+.logo-col img{max-width:144px;max-height:140px;object-fit:contain}
+.logo-txt{color:var(--yw);font-size:18px;font-weight:900;text-align:center;margin-top:8px}
+.hdr-brand{display:none}
 
-.hdr-r{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.hdr-r{display:flex;align-items:center;gap:8px}
 .role-b{background:var(--yw);color:var(--bk);font-size:10px;font-weight:900;padding:4px 9px;border-radius:11px;text-transform:uppercase}
 .ub{font-size:12px;color:#bbb;background:var(--bk2);padding:4px 11px;border-radius:12px;border:1px solid #3a3a3a}
 .btn-logout{background:none;border:1px solid #444;padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;color:#888;font-weight:700}
 .btn-logout:hover{border-color:var(--no);color:var(--no)}
-.cnt{max-width:1300px;margin:0 auto;padding:16px}
+.cnt{padding:16px;min-width:0}
 .card{background:#2a2a2a;border:1px solid #3a3a3a;border-radius:var(--r);padding:16px;margin-bottom:12px}
 .ch{font-size:13px;font-weight:800;margin-bottom:11px;padding-bottom:8px;border-bottom:2px solid var(--yw);text-transform:uppercase;letter-spacing:.4px;display:flex;justify-content:space-between;align-items:center}
 .fg{margin-bottom:11px}
@@ -57,7 +61,7 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 .d-y{background:var(--ok)}.d-n{background:var(--no)}.d-p{background:#ccc}
 .fbar{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
 .fbar input,.fbar select{padding:7px 10px;border:1px solid var(--b);border-radius:6px;font-size:12px;font-family:inherit;background:#333}
-.fbar input:focus,.fbar select:focus{outline:none;border-color:var(--yw)}
+.fbar input:focus,.fbar select:focus{outline:none;border-color:var(--yw);background:#3a3a3a}
 .fbar input[type=text]{min-width:200px;flex:1}
 .dg{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 .dg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
@@ -86,7 +90,7 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 @keyframes sp{to{transform:rotate(360deg)}}
 .empty{text-align:center;padding:36px;color:var(--m)}
 .pwd-card{background:#3a3200;border:2px solid var(--yw);border-radius:var(--r);padding:18px;margin-bottom:14px}
-@media(max-width:900px){.dg,.dg3{grid-template-columns:1fr}.cnt{padding:10px}.otbl{font-size:11px}.otbl th,.otbl td{padding:6px 4px}}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.logo-col{display:none}.dg,.dg3{grid-template-columns:1fr}.cnt{padding:10px}.otbl{font-size:11px}.otbl th,.otbl td{padding:6px 4px}}
 </style>
 </head>
 <body>
@@ -113,14 +117,18 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
 <!-- APP -->
 <div id="appView" style="display:none">
 <div class="hdr">
-  <div class="hdr-brand"><img src="logo.png" style="max-height:64px;max-width:160px;object-fit:contain;padding:8px 12px" alt="studio55" onerror="this.outerHTML='<span style=&quot;color:var(--yw);font-size:22px;font-weight:900;padding:0 12px&quot;>studio55</span>'"></div>
-  <div class="hdr-r">
-    <span class="role-b" id="roleBadge">pracownik</span>
-    <span class="ub" id="userLabel"></span>
-    <button class="btn-logout" onclick="doLogout()">⏻ Wyloguj</button>
-  </div>
+  <span class="role-b" id="roleBadge">pracownik</span>
+  <span class="ub" id="userLabel"></span>
+  <button class="btn-logout" onclick="doLogout()">⏻ Wyloguj</button>
 </div>
-<div class="cnt">
+<div class="layout">
+  <div class="logo-col">
+    <div style="text-align:center">
+      <img src="logo.png" alt="studio55" onerror="this.style.display='none';this.nextElementSibling.style.display=''">
+      <div class="logo-txt" style="display:none">studio55</div>
+    </div>
+  </div>
+  <div class="cnt">
   <div id="pwdPrompt" class="pwd-card" style="display:none">
     <div class="ch">🔑 Ustaw własne hasło</div>
     <p style="font-size:13px;color:#7a6000;margin-bottom:12px">Administrator ustawił hasło tymczasowe. Zmień je aby kontynuować.</p>
@@ -134,6 +142,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
     <div id="vList"></div>
     <div id="vDetail" style="display:none"></div>
   </div>
+</div>
 </div>
 </div>
 

@@ -26,18 +26,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .login-lang{text-align:center;margin-top:16px}
 .login-lang button{background:none;border:1px solid #444;padding:3px 9px;border-radius:4px;cursor:pointer;font-size:11px;color:#888;font-weight:700;margin:0 2px}
 .login-lang button.active{background:var(--yw);color:var(--bk);border-color:var(--yw)}
-.hdr{background:var(--bk);display:grid;grid-template-columns:180px 1fr 180px;align-items:center;height:80px;border-bottom:3px solid var(--yw);position:sticky;top:0;z-index:100}
-.hdr-l{display:flex;align-items:center;justify-content:flex-start;padding:0 12px}
-.hdr-brand{display:flex;align-items:center;justify-content:flex-start}.hdr-brand img{max-height:64px;max-width:160px;object-fit:contain}
+.hdr{background:var(--bk);display:flex;align-items:center;justify-content:flex-end;gap:8px;height:46px;border-bottom:2px solid var(--yw);position:sticky;top:0;z-index:100;padding:0 16px}
 
-.hdr-logo-box{display:flex;align-items:center;justify-content:flex-end;padding:0 12px}.hdr-logo-box img{max-height:64px;max-width:160px;object-fit:contain}
-.hdr-r{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.hdr-brand{display:none}
+
+.hdr-logo-box{display:none}
+.hdr-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .lb{background:none;border:1px solid #444;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;color:#999;font-weight:700}
 .lb:hover{border-color:var(--yw);color:var(--yw)}.lb.active{background:var(--yw);color:var(--bk);border-color:var(--yw)}
 .ub{font-size:12px;color:#bbb;background:var(--bk2);padding:4px 11px;border-radius:12px;border:1px solid #3a3a3a;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .btn-logout{background:none;border:1px solid #444;padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;color:#888;font-weight:700}
 .btn-logout:hover{border-color:var(--no);color:var(--no)}
-.cnt{max-width:1150px;margin:0 auto;padding:16px}
+.layout{display:grid;grid-template-columns:160px 1fr 160px;min-height:calc(100vh - 46px)}
+.logo-col{background:#111;display:flex;align-items:flex-start;justify-content:center;padding:20px 8px;position:sticky;top:46px;height:calc(100vh - 46px)}
+.logo-col img{max-width:144px;max-height:140px;object-fit:contain}
+.logo-col .logo-txt{color:var(--yw);font-size:18px;font-weight:900;text-align:center;margin-top:8px}
+.logo-col-client{background:#111;display:flex;align-items:flex-start;justify-content:center;padding:20px 8px;position:sticky;top:46px;height:calc(100vh - 46px)}
+.logo-col-client img{max-width:144px;max-height:140px;object-fit:contain}
+.cnt{padding:16px;min-width:0}
 .tabs{display:flex;gap:4px;margin-bottom:14px;background:#111;padding:4px;border-radius:var(--r)}
 .tab{flex:1;padding:9px;text-align:center;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;border:none;background:none;color:#888;font-family:inherit}
 .tab.active{background:var(--yw);color:var(--bk)}.tab:hover:not(.active){background:var(--bk2);color:#ccc}
@@ -69,7 +75,7 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 .atag-v{background:#dbeafe;color:#1e40af}.atag-c{background:#f3e8ff;color:#6b21a8}.atag-d{background:#ffedd5;color:#9a3412}
 .fbar{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
 .fbar input,.fbar select{padding:7px 10px;border:1px solid var(--b);border-radius:6px;font-size:12px;font-family:inherit;background:#333}
-.fbar input:focus,.fbar select:focus{outline:none;border-color:var(--yw)}
+.fbar input:focus,.fbar select:focus{outline:none;border-color:var(--yw);background:#3a3a3a}
 .fbar input[type=text]{min-width:190px;flex:1}
 .dg{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 .di .lbl{font-size:10px;color:var(--m);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
@@ -97,7 +103,7 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 .cfm-ov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
 .cfm{background:var(--s);border-radius:var(--r);padding:22px;max-width:420px;width:100%;border-top:4px solid var(--yw)}
 .empty{text-align:center;padding:36px;color:var(--m);font-size:14px}
-@media(max-width:768px){.otbl{font-size:11px}.otbl th,.otbl td{padding:7px 5px}.hdr{padding:0 12px}.hdr-client-logo{height:24px;max-width:80px;padding-left:10px}.ub{max-width:90px;font-size:11px}.dg{grid-template-columns:1fr}.cnt{padding:10px}.fbar input[type=text]{min-width:100%}}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.logo-col,.logo-col-client{display:none}.otbl{font-size:11px}.otbl th,.otbl td{padding:7px 5px}.ub{max-width:90px;font-size:11px}.dg{grid-template-columns:1fr}.cnt{padding:10px}.fbar input[type=text]{min-width:100%}}
 </style>
 </head>
 <body>
@@ -129,18 +135,19 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
 <!-- ===================== APP ===================== -->
 <div id="appView" style="display:none">
 <div class="hdr">
-  <div class="hdr-brand">
-    <img src="logo.png" style="max-height:64px;max-width:160px;object-fit:contain;padding:8px 12px" alt="studio55" onerror="this.outerHTML='<span style=&quot;color:var(--yw);font-size:22px;font-weight:900;padding:0 12px&quot;>studio55</span>'">
-  </div>
-  <div class="hdr-r">
-    <div><button class="lb active" onclick="setLang('pl')" data-l="pl">PL</button><button class="lb" onclick="setLang('en')" data-l="en">EN</button><button class="lb" onclick="setLang('de')" data-l="de">DE</button></div>
-    <span class="ub" id="userLabel"></span>
-    <button class="btn-logout" onclick="doLogout()" id="bLogout">⏻</button>
-  </div>
-  <div class="hdr-logo-box"><img id="clientLogo" style="display:none" alt=""></div>
+  <div><button class="lb active" onclick="setLang('pl')" data-l="pl">PL</button><button class="lb" onclick="setLang('en')" data-l="en">EN</button><button class="lb" onclick="setLang('de')" data-l="de">DE</button></div>
+  <span class="ub" id="userLabel"></span>
+  <button class="btn-logout" onclick="doLogout()" id="bLogout">⏻</button>
 </div>
 
-<div class="cnt">
+<div class="layout">
+  <div class="logo-col" id="logoColS55">
+    <div style="text-align:center">
+      <img src="logo.png" id="s55Logo" alt="studio55" onerror="this.style.display='none';document.getElementById('s55LogoTxt').style.display=''">
+      <div id="s55LogoTxt" style="display:none" class="logo-txt">studio55</div>
+    </div>
+  </div>
+  <div class="cnt">
   <div id="pwdPrompt" class="pwd-card" style="display:none">
     <div class="ch">🔑 <span id="pwdTitle"></span></div>
     <p style="font-size:13px;color:#7a6000;margin-bottom:12px" id="pwdMsg"></p>
@@ -161,6 +168,8 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
     <div id="vSettings" style="display:none"></div>
   </div>
 </div>
+</div>
+  <div class="logo-col-client" id="logoColClient"><div style="text-align:center"><img id="clientLogo" style="display:none;max-width:144px;max-height:140px;object-fit:contain" alt=""></div></div>
 </div>
 
 <div id="cfmBox" class="cfm-ov" style="display:none">
@@ -387,6 +396,7 @@ async function doLogin(){
     localStorage.setItem('s55_sess',session);
     localStorage.setItem('s55_name',userName);
     localStorage.setItem('s55_logo',userLogo);
+    localStorage.setItem('s55_login',document.getElementById('inLogin').value.trim().toLowerCase());
     // Login zwraca już listę zleceń — pomijamy osobne zapytanie
     if(r.orders){ allOrders=r.orders; ordersLoaded=true }
     showApp();
@@ -408,6 +418,7 @@ function showApp(){
   document.getElementById('loginView').style.display='none';
   document.getElementById('appView').style.display='';
   document.getElementById('userLabel').textContent = userCompany && userCompany!==userName ? userCompany : userName;
+  // Logo klienta z Drive — URL zapisany w koncie przez admina
   const lg=document.getElementById('clientLogo');
   if(userLogo){ lg.src=userLogo; lg.style.display=''; lg.onerror=()=>{lg.style.display='none'} }
   else lg.style.display='none';

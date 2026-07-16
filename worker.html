@@ -100,7 +100,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
 <div id="loginView" class="login-wrap">
   <div class="login-box">
     <div class="login-logo">
-      <img src="logo.png" style="height:70px;object-fit:contain" alt="studio55" onerror="this.style.display='none';this.nextElementSibling.style.display=''">
+      <img src="logo.png" style="height:70px;object-fit:contain;background:transparent" alt="studio55" onerror="this.style.display='none';this.nextElementSibling.style.display=''">
       <div style="display:none"><div class="brand">studio55</div><div class="sub">PANEL PRACOWNIKA</div></div>
     </div>
     <div class="fg"><label>Login</label><input id="inLogin" autocomplete="username" ></div>
@@ -113,7 +113,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
 <!-- APP -->
 <div id="appView" style="display:none">
 <div class="hdr">
-  <div class="hdr-brand"><img src="logo.png" style="height:34px;object-fit:contain;filter:brightness(0) invert(1)" alt="studio55" onerror="this.outerHTML='<span style=&quot;color:var(--yw);font-size:19px;font-weight:900&quot;>studio55</span>'"></div>
+  <div class="hdr-brand"><img src="logo.png" style="height:34px;object-fit:contain" alt="studio55" onerror="this.outerHTML='<span style=&quot;color:var(--yw);font-size:19px;font-weight:900&quot;>studio55</span>'"></div>
   <div class="hdr-r">
     <span class="role-b" id="roleBadge">pracownik</span>
     <span class="ub" id="userLabel"></span>
@@ -390,7 +390,7 @@ function renderDetail(o){
   h+='<div class="fg"><label>Data wysyłki</label><input type="date" id="eShipDate" value="'+esc(o.shipDate||'')+'"></div>';
   h+='</div><div class="dg3">';
   h+='<div class="fg"><label>Tracking</label><input id="eTracking" value="'+esc(o.tracking||'')+'"></div>';
-  h+='<div class="fg"><label>Plik trackingu (opcjonalnie)</label>'+(o.trackingFile&&o.trackingFile.length?'<div class="fl" style="margin-bottom:6px">'+o.trackingFile.map(x=>'<a class="fc" href="'+esc(x.viewUrl||x.url||'#')+'" target="_blank">📎 '+esc(x.name||'Plik')+'</a>').join('')+'</div>':'')+'<div class="fuz" onclick="document.getElementById(\'uTrack\').click()">📎 Kliknij aby dodać plik<input type="file" id="uTrack" multiple onchange="handleUp(this,\'trackingFile\')"></div></div>';
+  h+='<div class="fg"><label>List przewozowy — plik</label>'+(o.trackingFile&&o.trackingFile.length?'<div class="fl" style="margin-bottom:6px">'+o.trackingFile.map(x=>'<a class="fc" href="'+esc(x.viewUrl||x.url||'#')+'" target="_blank">📎 '+esc(x.name||'Plik')+'</a>').join('')+'</div>':'')+'<div class="fuz" onclick="document.getElementById(\'uTrack\').click()">📎 Kliknij aby dodać plik<input type="file" id="uTrack" multiple onchange="handleUp(this,\'trackingFile\')"></div></div>';
   h+='<div class="fg"><label>List przewozowy</label><input id="eWaybill" value="'+esc(o.waybill||'')+'"></div>';
   h+='<div class="fg"><label>Nadawca (dostawa neutralna)</label><input id="eSender" value="'+esc(o.sender||'')+'"></div>';
   h+='</div>';

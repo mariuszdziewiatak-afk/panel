@@ -106,7 +106,7 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 /* ============================================================
    KONFIGURACJA — wklej URL swojego Apps Script Web App
    ============================================================ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu46EyTy2X5XHqwoCkCwl8g0RrDx6miHJFvS3iiTTNk17AzA/exec';
+const API_URL = 'YOUR_APPS_SCRIPT_URL';
 </script>
 
 <!-- ===================== LOGIN ===================== -->
@@ -116,8 +116,8 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
       <div class="brand">studio55</div>
       <div class="sub">ADVERTISING SOLUTIONS</div>
     </div>
-    <div class="fg"><label id="llLogin">Login</label><input id="inLogin" autocomplete="username" placeholder=""></div>
-    <div class="fg"><label id="llPass">Hasło</label><input id="inPass" type="password" autocomplete="current-password" placeholder=""></div>
+    <div class="fg"><label id="llLogin">Login</label><input id="inLogin" autocomplete="username" ></div>
+    <div class="fg"><label id="llPass">Hasło</label><input id="inPass" type="password" autocomplete="current-password" ></div>
     <button class="btn-login" id="btnLogin" onclick="doLogin()">→ <span id="llBtn">Zaloguj się</span></button>
     <div class="login-err" id="loginErr"></div>
     <div class="login-lang">
@@ -761,7 +761,12 @@ function fileSec(title,files,oid,cat,canUp){
 }
 function noteList(n,cls){
   if(!n||!n.length) return '<p style="color:var(--m);font-size:12px">—</p>';
-  return n.map(x=>'<div class="ni '+(cls||'')+'"><div>'+esc(x.text)+'</div><div class="nm">'+fmtD(x.ts)+' · '+esc(x.by||'')+'</div></div>').join('');
+  return n.map(x=>{
+    let h='<div class="ni '+(cls||'')+'"><div>'+esc(x.text)+'</div>';
+    if(x.files&&x.files.length) h+='<div class="fl" style="margin-top:4px">'+x.files.map(f=>'<a class="fc" href="'+esc(f.viewUrl||f.url||'#')+'" target="_blank">📎 '+esc(f.name||'Plik')+'</a>').join('')+'</div>';
+    h+='<div class="nm">'+fmtD(x.ts)+' · '+esc(x.by||'')+'</div></div>';
+    return h;
+  }).join('');
 }
 function accBox(field,status,notes,oid){
   const na=Array.isArray(notes)?notes:[];

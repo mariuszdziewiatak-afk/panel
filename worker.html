@@ -93,18 +93,18 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 
 <script>
 /* ============ KONFIGURACJA ============ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu46EyTy2X5XHqwoCkCwl8g0RrDx6miHJFvS3iiTTNk17AzA/exec';
+const API_URL = 'YOUR_APPS_SCRIPT_URL';
 </script>
 
 <!-- LOGIN -->
 <div id="loginView" class="login-wrap">
   <div class="login-box">
     <div class="login-logo">
-      <div class="brand">studio55</div>
-      <div class="sub">PANEL PRACOWNIKA</div>
+      <img src="logo.png" style="height:70px;object-fit:contain" alt="studio55" onerror="this.style.display='none';this.nextElementSibling.style.display=''">
+      <div style="display:none"><div class="brand">studio55</div><div class="sub">PANEL PRACOWNIKA</div></div>
     </div>
-    <div class="fg"><label>Login</label><input id="inLogin" autocomplete="username" placeholder=""></div>
-    <div class="fg"><label>Hasło</label><input id="inPass" type="password" autocomplete="current-password" placeholder=""></div>
+    <div class="fg"><label>Login</label><input id="inLogin" autocomplete="username" ></div>
+    <div class="fg"><label>Hasło</label><input id="inPass" type="password" autocomplete="current-password" ></div>
     <button class="btn-login" id="btnLogin" onclick="doLogin()">→ Zaloguj się</button>
     <div class="login-err" id="loginErr"></div>
   </div>
@@ -113,7 +113,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
 <!-- APP -->
 <div id="appView" style="display:none">
 <div class="hdr">
-  <div class="hdr-brand">studio55<span class="s">PANEL PRACOWNIKA</span></div>
+  <div class="hdr-brand"><img src="logo.png" style="height:34px;object-fit:contain;filter:brightness(0) invert(1)" alt="studio55" onerror="this.outerHTML='<span style=&quot;color:var(--yw);font-size:19px;font-weight:900&quot;>studio55</span>'"></div>
   <div class="hdr-r">
     <span class="role-b" id="roleBadge">pracownik</span>
     <span class="ub" id="userLabel"></span>
@@ -390,6 +390,7 @@ function renderDetail(o){
   h+='<div class="fg"><label>Data wysyłki</label><input type="date" id="eShipDate" value="'+esc(o.shipDate||'')+'"></div>';
   h+='</div><div class="dg3">';
   h+='<div class="fg"><label>Tracking</label><input id="eTracking" value="'+esc(o.tracking||'')+'"></div>';
+  h+='<div class="fg"><label>Plik trackingu (opcjonalnie)</label>'+(o.trackingFile&&o.trackingFile.length?'<div class="fl" style="margin-bottom:6px">'+o.trackingFile.map(x=>'<a class="fc" href="'+esc(x.viewUrl||x.url||'#')+'" target="_blank">📎 '+esc(x.name||'Plik')+'</a>').join('')+'</div>':'')+'<div class="fuz" onclick="document.getElementById(\'uTrack\').click()">📎 Kliknij aby dodać plik<input type="file" id="uTrack" multiple onchange="handleUp(this,\'trackingFile\')"></div></div>';
   h+='<div class="fg"><label>List przewozowy</label><input id="eWaybill" value="'+esc(o.waybill||'')+'"></div>';
   h+='<div class="fg"><label>Nadawca (dostawa neutralna)</label><input id="eSender" value="'+esc(o.sender||'')+'"></div>';
   h+='</div>';
@@ -429,7 +430,12 @@ function renderDetail(o){
     +'<button class="btn btn-p btn-sm" onclick="addNote(\'client\')">↗ Wyślij do klienta</button></div></div>';
 
   h+='<div class="card"><div class="ch">💬 Wiadomości od klienta</div>'+noteList(o.clientNotes,'')+'</div>';
-  h+='<div class="card"><div class="ch">⚠️ Reklamacje</div>'+noteList(o.complaint,'ni-comp')+'</div>';
+  h+='<div class="card"><div class="ch">⚠️ Reklamacje</div>'+noteList(o.complaint,'ni-comp');
+  h+='<div style="margin-top:9px"><div class="fg"><textarea id="compTxt" rows="2" placeholder="Opis reklamacji…"></textarea></div>';
+  h+='<div class="fuz" onclick="document.getElementById(\'compF\').click()">📎 Dodaj zdjęcia<input type="file" id="compF" multiple accept="image/*,.pdf" onchange="handleCompChange(this)"></div>';
+  h+='<div class="fl" id="compFL" style="margin-top:6px"></div>';
+  h+='<button class="btn btn-no btn-sm" style="margin-top:8px" onclick="addWorkerComplaint()">⚠️ Zgłoś reklamację</button>';
+  h+='</div></div>';
 
   el.innerHTML=h;
 }
@@ -515,6 +521,24 @@ function uploadOne(file,field){
     };
     r.onerror=rej;r.readAsDataURL(file);
   });
+}
+
+let wCompFiles=[];
+function handleCompChange(inp){
+  wCompFiles=Array.from(inp.files);
+  const el=document.getElementById('compFL');
+  if(el) el.innerHTML=wCompFiles.map(f=>'<span class="fc">📎 '+esc(f.name)+'</span>').join('');
+}
+async function addWorkerComplaint(){
+  const txtEl=document.getElementById('compTxt');
+  const txt=txtEl?txtEl.value.trim():'';
+  if(!txt){toast('Podaj opis reklamacji','error');return}
+  try{
+    const r=await api({action:'addComplaint',orderId:curId,text:txt});
+    if(r.error)throw new Error(r.error);
+    for(const f of wCompFiles){ await uploadOne(f,'complaintFiles') }
+    toast('Reklamacja zgłoszona');wCompFiles=[];openOrder(curId);
+  }catch(e){toast(e.message,'error')}
 }
 
 async function addNote(type){

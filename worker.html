@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Pracownika — studio55</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+<style>
+:root{--bk:#1a1a1a;--bk2:#242424;--bk3:#333;--yw:#F5C518;--yw-d:#D4A800;--yw-l:#FFF8DC;--bg:#F5F5F5;--s:#fff;--b:#E0E0E0;--t:#1a1a1a;--m:#666;--r:8px;--ok:#16a34a;--okb:#dcfce7;--no:#dc2626;--nob:#fee2e2;--bl:#3b82f6;--blb:#eff6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t);line-height:1.5}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bk);padding:20px}
+.login-box{background:var(--bk2);border:1px solid var(--bk3);border-radius:12px;padding:36px;width:100%;max-width:400px}
+.login-logo{text-align:center;margin-bottom:26px}
+.login-logo .brand{color:var(--yw);font-size:26px;font-weight:900;letter-spacing:-.5px}
+.login-logo .sub{color:#777;font-size:11px;letter-spacing:2px;margin-top:2px}
+.login-box .fg{margin-bottom:14px}
+.login-box label{display:block;font-size:11px;font-weight:700;margin-bottom:5px;color:#999;text-transform:uppercase;letter-spacing:.5px}
+.login-box input{width:100%;padding:11px 14px;background:var(--bk3);border:1px solid #444;border-radius:6px;font-size:14px;color:#fff;font-family:inherit}
+.login-box input:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
+.btn-login{width:100%;padding:12px;background:var(--yw);color:var(--bk);border:none;border-radius:6px;font-size:15px;font-weight:800;cursor:pointer;margin-top:6px}
+.btn-login:hover{background:var(--yw-d)}.btn-login:disabled{opacity:.5}
+.login-err{color:#f87171;font-size:13px;margin-top:10px;text-align:center;min-height:18px}
+.hdr{background:var(--bk);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:58px;border-bottom:3px solid var(--yw);position:sticky;top:0;z-index:100}
+.hdr-brand{color:var(--yw);font-size:19px;font-weight:900;letter-spacing:-.5px}
+.hdr-brand .s{display:block;font-size:8px;color:#666;letter-spacing:2px;font-weight:400;margin-top:-3px}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.role-b{background:var(--yw);color:var(--bk);font-size:10px;font-weight:900;padding:4px 9px;border-radius:11px;text-transform:uppercase}
+.ub{font-size:12px;color:#bbb;background:var(--bk2);padding:4px 11px;border-radius:12px;border:1px solid #3a3a3a}
+.btn-logout{background:none;border:1px solid #444;padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;color:#888;font-weight:700}
+.btn-logout:hover{border-color:var(--no);color:var(--no)}
+.cnt{max-width:1300px;margin:0 auto;padding:16px}
+.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.ch{font-size:13px;font-weight:800;margin-bottom:11px;padding-bottom:8px;border-bottom:2px solid var(--yw);text-transform:uppercase;letter-spacing:.4px;display:flex;justify-content:space-between;align-items:center}
+.fg{margin-bottom:11px}
+.fg label{display:block;font-size:10px;font-weight:800;margin-bottom:4px;color:var(--m);text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg textarea,.fg select{width:100%;padding:8px 11px;border:1px solid var(--b);border-radius:6px;font-size:13px;font-family:inherit;background:#fff}
+.fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
+textarea{resize:vertical;min-height:60px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-p{background:var(--yw);color:var(--bk)}.btn-p:hover{background:var(--yw-d)}
+.btn-o{background:none;border:1px solid var(--b);color:var(--t)}.btn-o:hover{background:var(--bg)}
+.btn-sm{padding:5px 11px;font-size:12px}.btn:disabled{opacity:.4}
+table.otbl{width:100%;border-collapse:collapse;font-size:13px}
+.otbl th{text-align:left;padding:10px 8px;background:var(--bk);color:#bbb;font-size:10px;font-weight:800;border-bottom:2px solid var(--yw);cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+.otbl th:hover{color:var(--yw)}.otbl th.sorted{color:var(--yw)}
+.otbl th .arr{font-size:8px;margin-left:3px;opacity:.4}.otbl th.sorted .arr{opacity:1}
+.otbl td{padding:9px 8px;border-bottom:1px solid var(--b)}
+.otbl tr.dr{cursor:pointer}.otbl tr.dr:hover td{background:var(--yw-l)}
+.nowrap{white-space:nowrap}
+.st{display:inline-block;padding:3px 9px;border-radius:11px;font-size:10px;font-weight:800;white-space:nowrap}
+.st-pend{background:#3a3a3a;color:var(--yw)}.st-prog{background:var(--yw-l);color:#8a6d00;border:1px solid var(--yw)}
+.st-done{background:var(--okb);color:var(--ok)}.st-canc{background:var(--nob);color:var(--no)}
+.dots{display:inline-flex;gap:3px;align-items:center}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.d-y{background:var(--ok)}.d-n{background:var(--no)}.d-p{background:#ccc}
+.fbar{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.fbar input,.fbar select{padding:7px 10px;border:1px solid var(--b);border-radius:6px;font-size:12px;font-family:inherit;background:#fff}
+.fbar input:focus,.fbar select:focus{outline:none;border-color:var(--yw)}
+.fbar input[type=text]{min-width:200px;flex:1}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.dg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
+.di .lbl{font-size:10px;color:var(--m);font-weight:800;text-transform:uppercase}
+.di .val{font-size:13px;margin-top:1px}
+.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.fc{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;background:var(--bg);border:1px solid var(--b);border-radius:6px;font-size:12px;text-decoration:none;color:var(--t);font-weight:600}
+.fc:hover{border-color:var(--yw);background:var(--yw-l)}
+.fuz{border:2px dashed var(--b);border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;font-size:12px;color:var(--m);margin-top:7px;font-weight:600}
+.fuz:hover{border-color:var(--yw);background:var(--yw-l)}.fuz input{display:none}
+.ni{padding:9px 11px;background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--yw)}
+.ni-team{border-left-color:#8b5cf6;background:#faf5ff}
+.ni-notif{border-left-color:var(--bl);background:var(--blb)}
+.ni-comp{border-left-color:var(--no);background:var(--nob)}
+.ni .nm{font-size:10px;color:var(--m);margin-top:4px;font-weight:600}
+.acc-grid{display:grid;grid-template-columns:1fr;gap:0}
+.acc-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--b);flex-wrap:wrap}
+.acc-row:last-child{border:none}
+.acc-lbl{font-size:12px;font-weight:800;min-width:130px}
+.acc-st{font-size:12px;font-weight:700;min-width:110px}
+.a-y{color:var(--ok)}.a-n{color:var(--no)}.a-p{color:#999}
+.acc-note{flex:1;font-size:11px;color:var(--m);min-width:200px}
+.toast{position:fixed;bottom:16px;right:16px;padding:11px 17px;border-radius:var(--r);font-size:13px;z-index:1000;color:#fff;font-weight:700}
+.loading{display:flex;justify-content:center;padding:32px}
+.spinner{width:26px;height:26px;border:3px solid var(--b);border-top-color:var(--yw);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:36px;color:var(--m)}
+.pwd-card{background:var(--yw-l);border:2px solid var(--yw);border-radius:var(--r);padding:18px;margin-bottom:14px}
+@media(max-width:900px){.dg,.dg3{grid-template-columns:1fr}.cnt{padding:10px}.otbl{font-size:11px}.otbl th,.otbl td{padding:6px 4px}}
+</style>
+</head>
+<body>
+
+<script>
+/* ============ KONFIGURACJA ============ */
+const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu46EyTy2X5XHqwoCkCwl8g0RrDx6miHJFvS3iiTTNk17AzA/exec';
+</script>
+
+<!-- LOGIN -->
+<div id="loginView" class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="brand">studio55</div>
+      <div class="sub">PANEL PRACOWNIKA</div>
+    </div>
+    <div class="fg"><label>Login</label><input id="inLogin" autocomplete="username" placeholder="jan.kowalski"></div>
+    <div class="fg"><label>Hasło</label><input id="inPass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">→ Zaloguj się</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appView" style="display:none">
+<div class="hdr">
+  <div class="hdr-brand">studio55<span class="s">PANEL PRACOWNIKA</span></div>
+  <div class="hdr-r">
+    <span class="role-b" id="roleBadge">pracownik</span>
+    <span class="ub" id="userLabel"></span>
+    <button class="btn-logout" onclick="doLogout()">⏻ Wyloguj</button>
+  </div>
+</div>
+<div class="cnt">
+  <div id="pwdPrompt" class="pwd-card" style="display:none">
+    <div class="ch">🔑 Ustaw własne hasło</div>
+    <p style="font-size:13px;color:#7a6000;margin-bottom:12px">Administrator ustawił hasło tymczasowe. Zmień je aby kontynuować.</p>
+    <div class="dg3">
+      <div class="fg"><label>Nowe hasło (min. 6)</label><input id="np1" type="password"></div>
+      <div class="fg"><label>Powtórz</label><input id="np2" type="password"></div>
+      <div style="display:flex;align-items:flex-end;padding-bottom:11px"><button class="btn btn-p" onclick="doChangeInitPwd()">Zmień hasło</button></div>
+    </div>
+  </div>
+  <div id="mainArea">
+    <div id="vList"></div>
+    <div id="vDetail" style="display:none"></div>
+  </div>
+</div>
+</div>
+
+<script>
+let session=localStorage.getItem('s55w_sess')||'';
+let userName='',userRole='',workers=[];
+let allOrders=[],sortCol='dateCreated',sortDir='desc';
+let ordersLoaded=false;
+let curId=null,curOrder=null;
+
+function esc(s){if(s==null)return'';const d=document.createElement('div');d.textContent=String(s);return d.innerHTML}
+function fmtD(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString('pl-PL',{year:'numeric',month:'2-digit',day:'2-digit'})}catch(e){return d}}
+function fmtDT(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleString('pl-PL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){return d}}
+function toast(m,type){const e=document.createElement('div');e.className='toast';e.style.background=type==='error'?'var(--no)':'var(--ok)';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
+
+function api(data){
+  data.session=session;
+  return new Promise((res,rej)=>{
+    const cb='_w'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+    const p=encodeURIComponent(JSON.stringify(data));
+    const url=API_URL+'?callback='+cb+'&payload='+p;
+    if(url.length>7000)return apiPost(data).then(res).catch(rej);
+    const s=document.createElement('script');
+    const tm=setTimeout(()=>{rm();rej(new Error('Timeout'))},35000);
+    function rm(){clearTimeout(tm);delete window[cb];if(s.parentNode)s.remove()}
+    window[cb]=function(r){rm();if(r&&r.error&&/Sesja wygasła/i.test(r.error)){doLogout();return}res(r)};
+    s.src=url;s.onerror=function(){rm();rej(new Error('Network error'))};
+    document.body.appendChild(s);
+  });
+}
+async function apiPost(data){
+  data.session=session;
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),redirect:'follow'});
+  const j=await r.json();
+  if(j&&j.error&&/Sesja wygasła/i.test(j.error))doLogout();
+  return j;
+}
+
+/* ============ LOGIN ============ */
+async function doLogin(){
+  const login=document.getElementById('inLogin').value.trim();
+  const pass=document.getElementById('inPass').value;
+  const err=document.getElementById('loginErr');
+  const btn=document.getElementById('btnLogin');
+  if(!login||!pass){err.textContent='Podaj login i hasło';return}
+  btn.disabled=true;err.textContent='…';
+  try{
+    const r=await new Promise((res,rej)=>{
+      const cb='_l'+Date.now();
+      const p=encodeURIComponent(JSON.stringify({action:'login',login,password:pass}));
+      const s=document.createElement('script');
+      const tm=setTimeout(()=>{rm();rej(new Error('Timeout'))},35000);
+      function rm(){clearTimeout(tm);delete window[cb];if(s.parentNode)s.remove()}
+      window[cb]=function(r){rm();res(r)};
+      s.src=API_URL+'?callback='+cb+'&payload='+p;
+      s.onerror=function(){rm();rej(new Error('Network error'))};
+      document.body.appendChild(s);
+    });
+    if(r.error)throw new Error(r.error);
+    if(r.role!=='worker'&&r.role!=='admin')throw new Error('Ten panel jest dla pracowników');
+    session=r.session;userName=r.name;userRole=r.role;
+    localStorage.setItem('s55w_sess',session);
+    // Login zwraca już listę zleceń i pracowników — pomijamy osobne zapytania
+    if(r.orders){allOrders=r.orders;ordersLoaded=true}
+    if(r.workers){workers=r.workers}
+    showApp(r.mustChangePassword);
+  }catch(e){err.textContent=e.message}
+  finally{btn.disabled=false}
+}
+function doLogout(){
+  if(session)api({action:'logout'}).catch(()=>{});
+  session='';localStorage.removeItem('s55w_sess');
+  document.getElementById('loginView').style.display='';
+  document.getElementById('appView').style.display='none';
+  document.getElementById('inPass').value='';
+  document.getElementById('loginErr').textContent='';
+}
+async function showApp(mustChange){
+  document.getElementById('loginView').style.display='none';
+  document.getElementById('appView').style.display='';
+  document.getElementById('userLabel').textContent=userName;
+  document.getElementById('roleBadge').textContent=userRole==='admin'?'admin':'pracownik';
+  if(mustChange){
+    document.getElementById('pwdPrompt').style.display='';
+    document.getElementById('mainArea').style.display='none';
+    return;
+  }
+  document.getElementById('pwdPrompt').style.display='none';
+  document.getElementById('mainArea').style.display='';
+  if(!workers.length){ try{const wr=await api({action:'listWorkers'});workers=wr.workers||[]}catch(e){} }
+  loadOrders();
+}
+async function doChangeInitPwd(){
+  const p1=document.getElementById('np1').value,p2=document.getElementById('np2').value;
+  if(p1!==p2){toast('Hasła się różnią','error');return}
+  if(p1.length<6){toast('Min. 6 znaków','error');return}
+  try{
+    const r=await api({action:'changePassword',newPassword:p1});
+    if(r.error)throw new Error(r.error);
+    toast('Hasło zmienione');
+    document.getElementById('pwdPrompt').style.display='none';
+    document.getElementById('mainArea').style.display='';
+    const wr=await api({action:'listWorkers'});workers=wr.workers||[];
+    loadOrders();
+  }catch(e){toast(e.message,'error')}
+}
+
+/* ============ LIST ============ */
+async function loadOrders(force){
+  const el=document.getElementById('vList');
+  document.getElementById('vDetail').style.display='none';
+  el.style.display='';
+  if(ordersLoaded && !force){
+    ordersLoaded=false;
+    renderTable();
+    return;
+  }
+  el.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{
+    const r=await api({action:'getOrders'});
+    if(r.error)throw new Error(r.error);
+    allOrders=r.orders||[];
+    renderTable();
+  }catch(e){el.innerHTML='<div class="card" style="color:var(--no);padding:20px">'+esc(e.message)+'</div>'}
+}
+
+const COLS=[
+  {k:'dateCreated',  l:'Data',        w:'82px'},
+  {k:'clientId',     l:'Klient',      w:'110px'},
+  {k:'description',  l:'Opis',        w:''},
+  {k:'status',       l:'Status',      w:'100px'},
+  {k:'orderNo',      l:'Nr zlec.',    w:'88px'},
+  {k:'clientOrderNo',l:'Nr klienta',  w:'88px'},
+  {k:'tracking',     l:'Tracking',    w:'88px'},
+  {k:'guardian',     l:'Opiekun',     w:'96px'},
+  {k:'_acc',         l:'Akcept.',     w:'72px'},
+];
+
+function renderTable(){
+  const el=document.getElementById('vList');
+  const clients=[...new Set(allOrders.map(o=>o.clientId).filter(Boolean))].sort();
+  let h='<div class="fbar">';
+  h+='<input type="text" id="fS" placeholder="🔍 Szukaj (opis, nr, tracking, klient)…" oninput="filterTable()">';
+  h+='<select id="fSt" onchange="filterTable()"><option value="">— Status —</option><option value="PENDING">Oczekuje</option><option value="IN_PROGRESS">W realizacji</option><option value="DONE">Zakończone</option><option value="CANCELLED">Anulowane</option></select>';
+  h+='<select id="fC" onchange="filterTable()"><option value="">— Klient —</option>'+clients.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select>';
+  h+='<select id="fG" onchange="filterTable()"><option value="">— Opiekun —</option><option value="__none">(brak opiekuna)</option>'+workers.map(w=>'<option value="'+esc(w.login)+'">'+esc(w.name||w.login)+'</option>').join('')+'</select>';
+  h+='<button class="btn btn-o btn-sm" onclick="loadOrders(true)" title="Odśwież">↻</button>';
+  h+='</div>';
+  h+='<div class="card" style="padding:0;overflow-x:auto"><table class="otbl"><thead><tr>';
+  COLS.forEach(c=>{
+    const s=sortCol===c.k;
+    h+='<th class="'+(s?'sorted':'')+'" onclick="sortBy(\''+c.k+'\')"'+(c.w?' style="width:'+c.w+'"':'')+'>'+c.l+'<span class="arr">'+(s?(sortDir==='asc'?'▲':'▼'):'⇅')+'</span></th>';
+  });
+  h+='<th style="width:22px"></th></tr></thead><tbody id="tRows"></tbody></table></div>';
+  el.innerHTML=h;
+  filterTable();
+}
+
+function statusBadge(s){
+  const m={PENDING:['st-pend','Oczekuje'],IN_PROGRESS:['st-prog','W realizacji'],DONE:['st-done','Zakończone'],CANCELLED:['st-canc','Anulowane']};
+  const x=m[s]||['st-pend',s||'—'];
+  return '<span class="st '+x[0]+'">'+x[1]+'</span>';
+}
+function dot(s){return '<span class="dot '+(s==='YES'?'d-y':s==='NO'?'d-n':'d-p')+'"></span>'}
+
+function filterTable(){
+  const q=(document.getElementById('fS').value||'').toLowerCase();
+  const fSt=document.getElementById('fSt').value;
+  const fC=document.getElementById('fC').value;
+  const fG=document.getElementById('fG').value;
+
+  let items=allOrders.filter(o=>{
+    if(fSt&&o.status!==fSt)return false;
+    if(fC&&o.clientId!==fC)return false;
+    if(fG){ if(fG==='__none'){ if(o.guardian) return false } else if(o.guardian!==fG) return false }
+    if(q){
+      const hay=[o.description,o.orderNo,o.clientOrderNo,o.tracking,o.clientId,o.guardian,o.id].join(' ').toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+  items.sort((a,b)=>{let va=sortVal(a,sortCol),vb=sortVal(b,sortCol);if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0});
+
+  let h='';
+  items.forEach(o=>{
+    h+='<tr class="dr" onclick="openOrder(\''+o.id+'\')">';
+    h+='<td class="nowrap" style="color:var(--m);font-size:11px">'+fmtD(o.dateCreated)+'</td>';
+    h+='<td style="font-size:12px;font-weight:600">'+esc(o.clientId||'—')+'</td>';
+    h+='<td style="font-weight:600">'+esc((o.description||'').substring(0,46))+((o.description||'').length>46?'…':'')+'</td>';
+    h+='<td>'+statusBadge(o.status)+'</td>';
+    h+='<td style="font-size:12px">'+esc(o.orderNo||'—')+'</td>';
+    h+='<td style="font-size:12px">'+esc(o.clientOrderNo||'—')+'</td>';
+    h+='<td style="font-size:12px">'+esc(o.tracking||'—')+'</td>';
+    h+='<td style="font-size:12px;font-weight:600">'+esc(o.guardian||'—')+'</td>';
+    h+='<td>'+(o.status==='PENDING'?'<span class="dots" title="Wiz / Koszt / Termin">'+dot(o.vizStatus)+dot(o.costStatus)+dot(o.dateStatus)+'</span>':'<span style="color:#ccc">—</span>')+'</td>';
+    h+='<td style="color:#bbb;text-align:right">›</td></tr>';
+  });
+  if(!items.length)h='<tr><td colspan="10" class="empty">Brak zleceń</td></tr>';
+  document.getElementById('tRows').innerHTML=h;
+}
+
+function sortVal(o,c){
+  switch(c){
+    case'dateCreated':   return o.dateCreated||'';
+    case'clientId':      return (o.clientId||'').toLowerCase();
+    case'description':   return (o.description||'').toLowerCase();
+    case'status':        return o.status||'';
+    case'orderNo':       return (o.orderNo||'').toLowerCase();
+    case'clientOrderNo': return (o.clientOrderNo||'').toLowerCase();
+    case'tracking':      return (o.tracking||'').toLowerCase();
+    case'guardian':      return (o.guardian||'').toLowerCase();
+    case'_acc':          return (o.vizStatus||'')+(o.costStatus||'')+(o.dateStatus||'');
+    default: return '';
+  }
+}
+function sortBy(c){if(sortCol===c)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=c;sortDir='asc'}renderTable()}
+
+/* ============ DETAIL ============ */
+async function openOrder(id){
+  curId=id;
+  document.getElementById('vList').style.display='none';
+  const el=document.getElementById('vDetail');
+  el.style.display='';
+  el.innerHTML='<button class="btn btn-o btn-sm" onclick="backToList()" style="margin-bottom:10px">← Powrót</button><div class="loading"><div class="spinner"></div></div>';
+  try{
+    const r=await api({action:'getOrder',orderId:id});
+    if(r.error)throw new Error(r.error);
+    curOrder=r.order;
+    renderDetail(r.order);
+  }catch(e){el.innerHTML='<button class="btn btn-o btn-sm" onclick="backToList()">← Powrót</button><div class="card" style="margin-top:10px;color:var(--no)">'+esc(e.message)+'</div>'}
+}
+function backToList(){document.getElementById('vDetail').style.display='none';document.getElementById('vList').style.display='';loadOrders(true)}
+
+function renderDetail(o){
+  const el=document.getElementById('vDetail');
+  const isPending=o.status==='PENDING';
+  const wOpts=workers.map(w=>'<option value="'+esc(w.login)+'"'+(o.guardian===w.login?' selected':'')+'>'+esc(w.name||w.login)+'</option>').join('');
+
+  let h='<button class="btn btn-o btn-sm" onclick="backToList()" style="margin-bottom:10px">← Powrót do listy</button>';
+
+  // === EDIT CARD ===
+  h+='<div class="card"><div class="ch"><span>✏️ Edycja zlecenia</span><span style="font-size:11px;font-weight:400;color:var(--m);text-transform:none">ID: '+esc(o.id)+' · Klient: <strong>'+esc(o.clientId)+'</strong></span></div>';
+  h+='<div class="dg3">';
+  h+='<div class="fg"><label>Nr zlecenia (wewnętrzny)</label><input id="eOrderNo" value="'+esc(o.orderNo||'')+'"></div>';
+  h+='<div class="fg"><label>Status</label><select id="eStatus">'
+    +'<option value="PENDING"'+(o.status==='PENDING'?' selected':'')+'>Oczekuje (akceptacje)</option>'
+    +'<option value="IN_PROGRESS"'+(o.status==='IN_PROGRESS'?' selected':'')+'>W realizacji</option>'
+    +'<option value="DONE"'+(o.status==='DONE'?' selected':'')+'>Zakończone</option>'
+    +'<option value="CANCELLED"'+(o.status==='CANCELLED'?' selected':'')+'>Anulowane</option></select></div>';
+  h+='<div class="fg"><label>Opiekun</label><select id="eGuardian"><option value="">— brak —</option>'+wOpts+'</select></div>';
+  h+='</div><div class="dg3">';
+  h+='<div class="fg"><label>Proponowany termin</label><input id="eDateProp" value="'+esc(o.dateProposed||'')+'" placeholder="np. 15.03.2025"></div>';
+  h+='<div class="fg"><label>Deadline akceptacji</label><input id="eDateDl" value="'+esc(o.dateDeadline||'')+'" placeholder="np. 10.03.2025"></div>';
+  h+='<div class="fg"><label>Data wysyłki</label><input type="date" id="eShipDate" value="'+esc(o.shipDate||'')+'"></div>';
+  h+='</div><div class="dg3">';
+  h+='<div class="fg"><label>Tracking</label><input id="eTracking" value="'+esc(o.tracking||'')+'"></div>';
+  h+='<div class="fg"><label>List przewozowy</label><input id="eWaybill" value="'+esc(o.waybill||'')+'"></div>';
+  h+='<div class="fg"><label>Nadawca (dostawa neutralna)</label><input id="eSender" value="'+esc(o.sender||'')+'"></div>';
+  h+='</div>';
+  h+='<div class="fg"><label>Adres dostawy</label><input id="eAddr" value="'+esc(o.deliveryAddr||'')+'"></div>';
+  h+='<div style="background:var(--bg);padding:9px 11px;border-radius:6px;font-size:12px;margin-bottom:11px"><strong>Opis:</strong> '+esc(o.description||'—')+'<br><strong>Nr klienta:</strong> '+esc(o.clientOrderNo||'—')+' · <strong>Utworzono:</strong> '+fmtDT(o.dateCreated)+'</div>';
+  h+='<button class="btn btn-p" onclick="saveOrder()">💾 Zapisz zmiany</button></div>';
+
+  // === ACCEPTANCE STATUS ===
+  if(isPending){
+    h+='<div class="card"><div class="ch">✓ Akceptacje klienta</div><div class="acc-grid">';
+    h+=accRow('🎨 Wizualizacja',o.vizStatus,o.vizNotes, o.vizFiles&&o.vizFiles.length?null:'Brak plików — klient nie widzi jeszcze przycisków');
+    h+=accRow('💰 Kosztorys',o.costStatus,o.costNotes, o.costFile?null:'Brak pliku — klient nie widzi jeszcze przycisków');
+    h+=accRow('📅 Termin',o.dateStatus,o.dateNotes, o.dateProposed?null:'Brak terminu — klient nie widzi jeszcze przycisków');
+    h+='</div></div>';
+  }
+
+  // === FILES (worker uploads) ===
+  h+=upSec('🎨 Wizualizacja','vizFiles',o.vizFiles);
+  h+=upSec('💰 Kosztorys (PDF)','costFile',o.costFile?[o.costFile]:[]);
+  h+=upSec('📸 Zdjęcia z produkcji','prodPhotos',o.prodPhotos);
+  h+=upSec('🧾 Faktura','invoiceFile',o.invoiceFile?[o.invoiceFile]:[]);
+  h+=upSec('📄 Proforma','proformaFile',o.proformaFile?[o.proformaFile]:[]);
+
+  // === CLIENT FILES (read-only) ===
+  h+='<div class="card"><div class="ch">📎 Załączniki klienta</div>'+fileList(o.attachments)+'</div>';
+  h+='<div class="card"><div class="ch">💳 Potwierdzenia płatności</div>'+fileList(o.paymentConf)+'</div>';
+
+  // === NOTES ===
+  h+='<div class="card"><div class="ch"><span>🔒 Notatki zespołu</span><span style="font-size:10px;font-weight:400;color:var(--m);text-transform:none">niewidoczne dla klienta</span></div>'
+    +noteList(o.teamNotes,'ni-team')
+    +'<div style="margin-top:9px"><div class="fg"><textarea id="tNote" rows="2" placeholder="Notatka wewnętrzna…"></textarea></div>'
+    +'<button class="btn btn-o btn-sm" onclick="addNote(\'team\')">+ Dodaj notatkę</button></div></div>';
+
+  h+='<div class="card"><div class="ch">📢 Powiadomienia dla klienta</div>'
+    +noteList(o.clientNotifs,'ni-notif')
+    +'<div style="margin-top:9px"><div class="fg"><textarea id="cNote" rows="2" placeholder="Wiadomość widoczna dla klienta…"></textarea></div>'
+    +'<button class="btn btn-p btn-sm" onclick="addNote(\'client\')">↗ Wyślij do klienta</button></div></div>';
+
+  h+='<div class="card"><div class="ch">💬 Wiadomości od klienta</div>'+noteList(o.clientNotes,'')+'</div>';
+  h+='<div class="card"><div class="ch">⚠️ Reklamacje</div>'+noteList(o.complaint,'ni-comp')+'</div>';
+
+  el.innerHTML=h;
+}
+
+function accRow(label,status,notes,warn){
+  const cls=status==='YES'?'a-y':status==='NO'?'a-n':'a-p';
+  const txt=status==='YES'?'✓ Zaakceptowane':status==='NO'?'✗ Odrzucone':'⏳ Oczekuje';
+  let h='<div class="acc-row"><div class="acc-lbl">'+label+'</div><div class="acc-st '+cls+'">'+txt+'</div>';
+  if(warn) h+='<div class="acc-note" style="color:var(--no)">⚠ '+warn+'</div>';
+  else if(notes&&notes.length) h+='<div class="acc-note"><strong>Uwagi klienta:</strong> '+notes.map(n=>esc(n.text)).join(' | ')+'</div>';
+  h+='</div>';return h;
+}
+function upSec(title,field,files){
+  const a=Array.isArray(files)?files:(files?[files]:[]);
+  return '<div class="card"><div class="ch">'+title+'</div>'+fileList(a)
+    +'<div class="fuz" onclick="document.getElementById(\'u_'+field+'\').click()">📎 Kliknij aby dodać plik<input type="file" id="u_'+field+'" multiple onchange="handleUp(this,\''+field+'\')"></div></div>';
+}
+function fileList(f){
+  const a=Array.isArray(f)?f:(f?[f]:[]);
+  if(!a.length)return '<p style="color:var(--m);font-size:12px">Brak plików</p>';
+  return '<div class="fl">'+a.map(x=>'<a class="fc" href="'+esc(x.viewUrl||x.url||'#')+'" target="_blank">📎 '+esc(x.name||'Plik')+'</a>').join('')+'</div>';
+}
+function noteList(n,cls){
+  if(!n||!n.length)return '<p style="color:var(--m);font-size:12px">Brak</p>';
+  return n.map(x=>'<div class="ni '+(cls||'')+'"><div>'+esc(x.text)+'</div><div class="nm">'+fmtDT(x.ts)+' · '+esc(x.by||'')+'</div></div>').join('');
+}
+
+async function saveOrder(){
+  const fields={
+    orderNo:      document.getElementById('eOrderNo').value.trim(),
+    status:       document.getElementById('eStatus').value,
+    guardian:     document.getElementById('eGuardian').value,
+    dateProposed: document.getElementById('eDateProp').value.trim(),
+    dateDeadline: document.getElementById('eDateDl').value.trim(),
+    shipDate:     document.getElementById('eShipDate').value,
+    tracking:     document.getElementById('eTracking').value.trim(),
+    waybill:      document.getElementById('eWaybill').value.trim(),
+    sender:       document.getElementById('eSender').value.trim(),
+    deliveryAddr: document.getElementById('eAddr').value.trim(),
+  };
+  try{
+    const r=await api({action:'updateOrder',orderId:curId,fields});
+    if(r.error)throw new Error(r.error);
+    toast('Zapisano');openOrder(curId);
+  }catch(e){toast(e.message,'error')}
+}
+
+// Powyżej 3MB base64 — wysyłka fragmentami (szybciej, bez timeoutów)
+const CHUNK_THRESHOLD=3000000, CHUNK_SIZE=80000;
+
+async function handleUp(inp,field){
+  if(!inp.files.length)return;
+  toast('Przesyłanie…');
+  try{
+    for(const f of inp.files){ await uploadOne(f,field) }
+    toast('Przesłano');openOrder(curId);
+  }catch(e){toast(e.message,'error')}
+}
+
+function uploadOne(file,field){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=async function(){
+      try{
+        const b64=r.result.split(',')[1];
+        const meta={fileName:file.name,mimeType:file.type||'application/octet-stream',orderId:curId,fileCategory:field};
+        if(b64.length<=CHUNK_THRESHOLD){
+          const out=await apiPost(Object.assign({action:'uploadWorkerFile',base64:b64},meta));
+          if(out&&out.error)throw new Error(out.error);
+          res(out);
+        }else{
+          const uploadId='u'+Date.now()+Math.floor(Math.random()*1e6);
+          const total=Math.ceil(b64.length/CHUNK_SIZE);
+          for(let i=0;i<total;i++){
+            const out=await apiPost({action:'uploadChunk',uploadId,chunkIndex:i,chunk:b64.substr(i*CHUNK_SIZE,CHUNK_SIZE)});
+            if(out&&out.error)throw new Error(out.error);
+          }
+          const fin=await apiPost(Object.assign({action:'uploadFinish',uploadId,totalChunks:total},meta));
+          if(fin&&fin.error)throw new Error(fin.error);
+          res(fin);
+        }
+      }catch(e){rej(e)}
+    };
+    r.onerror=rej;r.readAsDataURL(file);
+  });
+}
+
+async function addNote(type){
+  const el=document.getElementById(type==='team'?'tNote':'cNote');
+  const txt=el?el.value.trim():'';
+  if(!txt)return;
+  try{
+    const r=await api({action:type==='team'?'addTeamNote':'addClientNotif',orderId:curId,text:txt});
+    if(r.error)throw new Error(r.error);
+    toast('Dodano');openOrder(curId);
+  }catch(e){toast(e.message,'error')}
+}
+
+document.getElementById('inPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inPass').focus()});
+
+(function init(){
+  if(session){
+    // Jedno wywołanie: dane użytkownika + zlecenia + lista pracowników
+    api({action:'init'}).then(r=>{
+      if(r.error||!r.success||(r.me.role!=='worker'&&r.me.role!=='admin')){doLogout();return}
+      userName=r.me.name;userRole=r.me.role;
+      allOrders=r.orders||[];ordersLoaded=true;
+      workers=r.workers||[];
+      showApp(false);
+    }).catch(()=>doLogout());
+  }
+})();
+</script>
+</body>
+</html>

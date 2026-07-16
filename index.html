@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Zleceń — studio55</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<style>
+:root{--bk:#1a1a1a;--bk2:#242424;--bk3:#333;--yw:#F5C518;--yw-d:#D4A800;--yw-l:#FFF8DC;--bg:#F5F5F5;--s:#fff;--b:#E0E0E0;--t:#1a1a1a;--m:#666;--r:8px;--ok:#16a34a;--okb:#dcfce7;--no:#dc2626;--nob:#fee2e2}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t);line-height:1.5}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bk);padding:20px}
+.login-box{background:var(--bk2);border:1px solid var(--bk3);border-radius:12px;padding:36px;width:100%;max-width:400px}
+.login-logo{text-align:center;margin-bottom:26px}
+.login-logo .brand{color:var(--yw);font-size:26px;font-weight:900;letter-spacing:-.5px}
+.login-logo .sub{color:#777;font-size:11px;letter-spacing:3px;margin-top:2px}
+.login-box .fg{margin-bottom:14px}
+.login-box label{display:block;font-size:11px;font-weight:700;margin-bottom:5px;color:#999;text-transform:uppercase;letter-spacing:.5px}
+.login-box input{width:100%;padding:11px 14px;background:var(--bk3);border:1px solid #444;border-radius:6px;font-size:14px;color:#fff;font-family:inherit}
+.login-box input:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
+.login-box input::placeholder{color:#666}
+.btn-login{width:100%;padding:12px;background:var(--yw);color:var(--bk);border:none;border-radius:6px;font-size:15px;font-weight:800;cursor:pointer;margin-top:6px}
+.btn-login:hover{background:var(--yw-d)}.btn-login:disabled{opacity:.5;cursor:not-allowed}
+.login-err{color:#f87171;font-size:13px;margin-top:10px;text-align:center;min-height:18px}
+.login-lang{text-align:center;margin-top:16px}
+.login-lang button{background:none;border:1px solid #444;padding:3px 9px;border-radius:4px;cursor:pointer;font-size:11px;color:#888;font-weight:700;margin:0 2px}
+.login-lang button.active{background:var(--yw);color:var(--bk);border-color:var(--yw)}
+.hdr{background:var(--bk);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:58px;border-bottom:3px solid var(--yw);position:sticky;top:0;z-index:100}
+.hdr-l{display:flex;align-items:center;gap:16px}
+.hdr-brand{color:var(--yw);font-size:19px;font-weight:900;letter-spacing:-.5px}
+.hdr-brand .s{display:block;font-size:8px;color:#666;letter-spacing:2px;font-weight:400;margin-top:-3px}
+.hdr-client-logo{height:32px;max-width:130px;object-fit:contain;border-left:1px solid #3a3a3a;padding-left:16px}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.lb{background:none;border:1px solid #444;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;color:#999;font-weight:700}
+.lb:hover{border-color:var(--yw);color:var(--yw)}.lb.active{background:var(--yw);color:var(--bk);border-color:var(--yw)}
+.ub{font-size:12px;color:#bbb;background:var(--bk2);padding:4px 11px;border-radius:12px;border:1px solid #3a3a3a;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-logout{background:none;border:1px solid #444;padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;color:#888;font-weight:700}
+.btn-logout:hover{border-color:var(--no);color:var(--no)}
+.cnt{max-width:1150px;margin:0 auto;padding:16px}
+.tabs{display:flex;gap:4px;margin-bottom:14px;background:var(--bk);padding:4px;border-radius:var(--r)}
+.tab{flex:1;padding:9px;text-align:center;border-radius:6px;cursor:pointer;font-size:13px;font-weight:700;border:none;background:none;color:#888;font-family:inherit}
+.tab.active{background:var(--yw);color:var(--bk)}.tab:hover:not(.active){background:var(--bk2);color:#ccc}
+.tab-ico{flex:0 0 44px}
+.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.ch{font-size:13px;font-weight:800;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--yw);text-transform:uppercase;letter-spacing:.4px}
+.fg{margin-bottom:11px}
+.fg label{display:block;font-size:11px;font-weight:700;margin-bottom:4px;color:var(--m);text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg textarea,.fg select{width:100%;padding:8px 11px;border:1px solid var(--b);border-radius:6px;font-size:13px;font-family:inherit;background:#fff}
+.fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
+textarea{resize:vertical;min-height:62px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-p{background:var(--yw);color:var(--bk)}.btn-p:hover{background:var(--yw-d)}
+.btn-ok{background:var(--ok);color:#fff}.btn-no{background:var(--no);color:#fff}
+.btn-o{background:none;border:1px solid var(--b);color:var(--t)}.btn-o:hover{background:var(--bg)}
+.btn-sm{padding:5px 11px;font-size:12px}.btn:disabled{opacity:.4;cursor:not-allowed}
+table.otbl{width:100%;border-collapse:collapse;font-size:13px}
+.otbl th{text-align:left;padding:10px;background:var(--bk);color:#bbb;font-size:10px;font-weight:800;border-bottom:2px solid var(--yw);cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+.otbl th:hover{color:var(--yw)}.otbl th.sorted{color:var(--yw)}
+.otbl th .arr{font-size:8px;margin-left:3px;opacity:.4}.otbl th.sorted .arr{opacity:1}
+.otbl td{padding:9px 10px;border-bottom:1px solid var(--b);vertical-align:middle}
+.otbl tr.dr{cursor:pointer}.otbl tr.dr:hover td{background:var(--yw-l)}
+.nowrap{white-space:nowrap}
+.st{display:inline-block;padding:3px 9px;border-radius:11px;font-size:10px;font-weight:800;white-space:nowrap}
+.st-pend{background:#3a3a3a;color:var(--yw)}.st-prog{background:var(--yw-l);color:#8a6d00;border:1px solid var(--yw)}
+.st-done{background:var(--okb);color:var(--ok)}.st-canc{background:var(--nob);color:var(--no)}
+.atags{display:flex;gap:3px;flex-wrap:wrap}
+.atag{padding:2px 7px;border-radius:9px;font-size:9px;font-weight:800;white-space:nowrap;text-transform:uppercase}
+.atag-v{background:#dbeafe;color:#1e40af}.atag-c{background:#f3e8ff;color:#6b21a8}.atag-d{background:#ffedd5;color:#9a3412}
+.fbar{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.fbar input,.fbar select{padding:7px 10px;border:1px solid var(--b);border-radius:6px;font-size:12px;font-family:inherit;background:#fff}
+.fbar input:focus,.fbar select:focus{outline:none;border-color:var(--yw)}
+.fbar input[type=text]{min-width:190px;flex:1}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.di .lbl{font-size:10px;color:var(--m);font-weight:800;text-transform:uppercase;letter-spacing:.4px}
+.di .val{font-size:13px;margin-top:1px}
+.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.fc{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;background:var(--bg);border:1px solid var(--b);border-radius:6px;font-size:12px;text-decoration:none;color:var(--t);font-weight:600}
+.fc:hover{border-color:var(--yw);background:var(--yw-l)}
+.fuz{border:2px dashed var(--b);border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;font-size:12px;color:var(--m);margin-top:7px;font-weight:600}
+.fuz:hover{border-color:var(--yw);background:var(--yw-l)}.fuz input{display:none}
+.ni{padding:9px 11px;background:var(--bg);border-radius:6px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--yw)}
+.ni-notif{border-left-color:#3b82f6;background:#eff6ff}
+.ni-comp{border-left-color:var(--no);background:var(--nob)}
+.ni .nm{font-size:10px;color:var(--m);margin-top:4px;font-weight:600}
+.ab{padding:14px;border-radius:var(--r);border:2px solid var(--b);margin-top:11px}
+.ab.pend{border-color:var(--yw);background:var(--yw-l)}
+.ab.yes{border-color:var(--ok);background:var(--okb)}
+.ab.no{border-color:var(--no);background:var(--nob)}
+.conv-banner{padding:15px;border-radius:var(--r);background:var(--okb);border:2px solid var(--ok);text-align:center;font-weight:800;color:var(--ok);margin-bottom:12px}
+.pwd-card{background:var(--yw-l);border:2px solid var(--yw);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.toast{position:fixed;bottom:16px;right:16px;padding:11px 17px;border-radius:var(--r);font-size:13px;z-index:1000;color:#fff;font-weight:700;animation:su .25s}
+@keyframes su{from{transform:translateY(14px);opacity:0}}
+.loading{display:flex;justify-content:center;padding:32px}
+.spinner{width:26px;height:26px;border:3px solid var(--b);border-top-color:var(--yw);border-radius:50%;animation:sp .6s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.cfm-ov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.cfm{background:var(--s);border-radius:var(--r);padding:22px;max-width:420px;width:100%;border-top:4px solid var(--yw)}
+.empty{text-align:center;padding:36px;color:var(--m);font-size:14px}
+@media(max-width:768px){.otbl{font-size:11px}.otbl th,.otbl td{padding:7px 5px}.hdr{padding:0 12px}.hdr-client-logo{height:24px;max-width:80px;padding-left:10px}.ub{max-width:90px;font-size:11px}.dg{grid-template-columns:1fr}.cnt{padding:10px}.fbar input[type=text]{min-width:100%}}
+</style>
+</head>
+<body>
+
+<script>
+/* ============================================================
+   KONFIGURACJA — wklej URL swojego Apps Script Web App
+   ============================================================ */
+const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu46EyTy2X5XHqwoCkCwl8g0RrDx6miHJFvS3iiTTNk17AzA/exec';
+</script>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="loginView" class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="brand">studio55</div>
+      <div class="sub">ADVERTISING SOLUTIONS</div>
+    </div>
+    <div class="fg"><label id="llLogin">Login</label><input id="inLogin" autocomplete="username" placeholder="twoj.login"></div>
+    <div class="fg"><label id="llPass">Hasło</label><input id="inPass" type="password" autocomplete="current-password" placeholder="••••••••"></div>
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">→ <span id="llBtn">Zaloguj się</span></button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-lang">
+      <button onclick="setLang('pl')" class="active" data-l="pl">PL</button><button onclick="setLang('en')" data-l="en">EN</button><button onclick="setLang('de')" data-l="de">DE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="appView" style="display:none">
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="hdr-brand">studio55<span class="s">ADVERTISING SOLUTIONS</span></div>
+    <img class="hdr-client-logo" id="clientLogo" style="display:none" alt="">
+  </div>
+  <div class="hdr-r">
+    <div><button class="lb active" onclick="setLang('pl')" data-l="pl">PL</button><button class="lb" onclick="setLang('en')" data-l="en">EN</button><button class="lb" onclick="setLang('de')" data-l="de">DE</button></div>
+    <span class="ub" id="userLabel"></span>
+    <button class="btn-logout" onclick="doLogout()" id="bLogout">⏻</button>
+  </div>
+</div>
+
+<div class="cnt">
+  <div id="pwdPrompt" class="pwd-card" style="display:none">
+    <div class="ch">🔑 <span id="pwdTitle"></span></div>
+    <p style="font-size:13px;color:#7a6000;margin-bottom:12px" id="pwdMsg"></p>
+    <div class="fg"><label id="lNp1"></label><input id="newPwd1" type="password"></div>
+    <div class="fg"><label id="lNp2"></label><input id="newPwd2" type="password"></div>
+    <button class="btn btn-p" onclick="doChangeInitPwd()" id="bChPwd"></button>
+  </div>
+
+  <div id="mainArea">
+    <div class="tabs">
+      <button class="tab active" onclick="showView('list')" id="tabList">—</button>
+      <button class="tab" onclick="showView('new')" id="tabNew">—</button>
+      <button class="tab tab-ico" onclick="showView('settings')" id="tabSet">⚙</button>
+    </div>
+    <div id="vList"></div>
+    <div id="vNew" style="display:none"></div>
+    <div id="vDetail" style="display:none"></div>
+    <div id="vSettings" style="display:none"></div>
+  </div>
+</div>
+</div>
+
+<div id="cfmBox" class="cfm-ov" style="display:none">
+  <div class="cfm">
+    <h3 id="cfmTitle" style="margin-bottom:8px;font-size:16px"></h3>
+    <p id="cfmMsg" style="font-size:13px;color:var(--m);margin-bottom:16px"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-o" onclick="closeCfm()" id="cfmNo"></button>
+      <button class="btn btn-p" onclick="execCfm()" id="cfmOk"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   STATE
+   ============================================================ */
+let session   = localStorage.getItem('s55_sess') || '';
+let userName  = '', userCompany = '', userLogo = '';
+let mustChangePwd = false, cfmCb = null;
+let cl = localStorage.getItem('s55_lang') || 'pl';
+let allOrders = [], sortCol = 'dateCreated', sortDir = 'desc';
+let ordersLoaded = false; // czy mamy już świeże dane (np. z logowania/init)
+
+/* ============================================================
+   TRANSLATIONS
+   ============================================================ */
+const L = {
+pl:{
+  llLogin:'Login', llPass:'Hasło', llBtn:'Zaloguj się',
+  myOrders:'Moje zlecenia', newOrder:'Nowe zlecenie',
+  // form
+  clientOrderNo:'Twój nr zamówienia (opcjonalnie)', desc:'Opis zlecenia',
+  addr:'Adres dostawy', sender:'Nadawca (tylko dla dostawy neutralnej)',
+  waybill:'List przewozowy', files:'Załączniki', upload:'Kliknij aby dodać pliki',
+  submit:'Wyślij zlecenie', back:'← Powrót do listy',
+  // table
+  date:'Data', description:'Opis', status:'Status', orderNo:'Nr zlecenia',
+  clientNo:'Nr klienta', tracking:'Tracking', guardian:'Opiekun', acceptances:'Akceptacje',
+  search:'Szukaj…', filterAll:'— Wszystkie —', noOrders:'Brak zleceń',
+  // status
+  stPending:'Oczekuje', stProgress:'W realizacji', stDone:'Zakończone', stCancel:'Anulowane',
+  // detail
+  info:'Informacje o zleceniu', registered:'Data rejestracji', shipDate:'Data wysyłki',
+  viz:'Wizualizacja', cost:'Kosztorys', dateProp:'Proponowany termin realizacji',
+  dateDl:'Termin akceptacji do', prodPhotos:'Zdjęcia z produkcji',
+  invoice:'Faktura', proforma:'Proforma', payConf:'Potwierdzenie płatności',
+  attachments:'Załączniki', notes:'Wiadomości', notifs:'Powiadomienia od nas',
+  complaint:'Reklamacja', noFiles:'Brak plików', waiting:'Oczekuje na przygotowanie',
+  // accept
+  pend:'Oczekuje', accept:'Akceptuję', reject:'Odrzucam',
+  accepted:'✓ Zaakceptowano', rejected:'✗ Odrzucono — czekamy na poprawkę',
+  prevNotes:'Twoje uwagi', noteReq:'Podaj powód odrzucenia',
+  confirmTitle:'Potwierdź akceptację', confirmMsg:'Tej decyzji nie można cofnąć. Czy na pewno akceptujesz?',
+  confirmYes:'Tak, akceptuję', confirmNo:'Anuluj',
+  converted:'✅ Wszystko zaakceptowane — zlecenie przeszło do realizacji!',
+  // actions
+  addNote:'Wyślij wiadomość', sendComplaint:'Zgłoś reklamację',
+  created:'Zlecenie zostało utworzone', sent:'Wysłano', uploaded:'Plik przesłany',
+  error:'Błąd', descReq:'Podaj opis zlecenia',
+  // settings
+  settings:'Ustawienia', changePwd:'Zmień hasło', oldPwd:'Obecne hasło',
+  newPwd:'Nowe hasło (min. 6 znaków)', confirmPwd:'Powtórz nowe hasło',
+  pwdChanged:'Hasło zostało zmienione', pwdMismatch:'Hasła nie są zgodne', pwdShort:'Minimum 6 znaków',
+  pwdTitle:'Ustaw własne hasło', pwdMsg:'Administrator ustawił hasło tymczasowe. Zmień je na własne aby kontynuować.',
+  logout:'Wyloguj',
+  // acceptance short
+  vizShort:'Wizualizacja', costShort:'Koszty', dateShort:'Termin',
+},
+en:{
+  llLogin:'Login', llPass:'Password', llBtn:'Sign in',
+  myOrders:'My orders', newOrder:'New order',
+  clientOrderNo:'Your order number (optional)', desc:'Order description',
+  addr:'Delivery address', sender:'Sender (neutral delivery only)',
+  waybill:'Waybill', files:'Attachments', upload:'Click to add files',
+  submit:'Submit order', back:'← Back to list',
+  date:'Date', description:'Description', status:'Status', orderNo:'Order no.',
+  clientNo:'Your no.', tracking:'Tracking', guardian:'Account manager', acceptances:'Approvals',
+  search:'Search…', filterAll:'— All —', noOrders:'No orders',
+  stPending:'Pending', stProgress:'In production', stDone:'Completed', stCancel:'Cancelled',
+  info:'Order information', registered:'Registered', shipDate:'Ship date',
+  viz:'Visualization', cost:'Cost estimate', dateProp:'Proposed completion date',
+  dateDl:'Approve by', prodPhotos:'Production photos',
+  invoice:'Invoice', proforma:'Proforma', payConf:'Payment confirmation',
+  attachments:'Attachments', notes:'Messages', notifs:'Notifications from us',
+  complaint:'Complaint', noFiles:'No files', waiting:'Being prepared',
+  pend:'Pending', accept:'Accept', reject:'Reject',
+  accepted:'✓ Accepted', rejected:'✗ Rejected — awaiting revision',
+  prevNotes:'Your notes', noteReq:'Please provide a reason',
+  confirmTitle:'Confirm approval', confirmMsg:'This cannot be undone. Are you sure?',
+  confirmYes:'Yes, I approve', confirmNo:'Cancel',
+  converted:'✅ All approved — order moved to production!',
+  addNote:'Send message', sendComplaint:'Submit complaint',
+  created:'Order has been created', sent:'Sent', uploaded:'File uploaded',
+  error:'Error', descReq:'Please provide a description',
+  settings:'Settings', changePwd:'Change password', oldPwd:'Current password',
+  newPwd:'New password (min. 6 chars)', confirmPwd:'Confirm new password',
+  pwdChanged:'Password changed', pwdMismatch:'Passwords do not match', pwdShort:'Minimum 6 characters',
+  pwdTitle:'Set your own password', pwdMsg:'The administrator set a temporary password. Please change it to continue.',
+  logout:'Logout',
+  vizShort:'Visualization', costShort:'Costs', dateShort:'Date',
+},
+de:{
+  llLogin:'Login', llPass:'Passwort', llBtn:'Anmelden',
+  myOrders:'Meine Aufträge', newOrder:'Neuer Auftrag',
+  clientOrderNo:'Ihre Bestellnummer (optional)', desc:'Auftragsbeschreibung',
+  addr:'Lieferadresse', sender:'Absender (nur neutrale Lieferung)',
+  waybill:'Frachtbrief', files:'Anhänge', upload:'Klicken zum Hochladen',
+  submit:'Auftrag senden', back:'← Zurück zur Liste',
+  date:'Datum', description:'Beschreibung', status:'Status', orderNo:'Auftrags-Nr.',
+  clientNo:'Ihre Nr.', tracking:'Tracking', guardian:'Betreuer', acceptances:'Freigaben',
+  search:'Suchen…', filterAll:'— Alle —', noOrders:'Keine Aufträge',
+  stPending:'Ausstehend', stProgress:'In Produktion', stDone:'Abgeschlossen', stCancel:'Storniert',
+  info:'Auftragsinformationen', registered:'Registriert', shipDate:'Versanddatum',
+  viz:'Visualisierung', cost:'Kostenvoranschlag', dateProp:'Vorgeschlagener Fertigstellungstermin',
+  dateDl:'Freigabe bis', prodPhotos:'Produktionsfotos',
+  invoice:'Rechnung', proforma:'Proforma', payConf:'Zahlungsbestätigung',
+  attachments:'Anhänge', notes:'Nachrichten', notifs:'Benachrichtigungen von uns',
+  complaint:'Reklamation', noFiles:'Keine Dateien', waiting:'Wird vorbereitet',
+  pend:'Ausstehend', accept:'Akzeptieren', reject:'Ablehnen',
+  accepted:'✓ Akzeptiert', rejected:'✗ Abgelehnt — Überarbeitung ausstehend',
+  prevNotes:'Ihre Anmerkungen', noteReq:'Bitte Grund angeben',
+  confirmTitle:'Freigabe bestätigen', confirmMsg:'Dies kann nicht rückgängig gemacht werden. Sind Sie sicher?',
+  confirmYes:'Ja, ich akzeptiere', confirmNo:'Abbrechen',
+  converted:'✅ Alles freigegeben — Auftrag in Produktion!',
+  addNote:'Nachricht senden', sendComplaint:'Reklamation senden',
+  created:'Auftrag wurde erstellt', sent:'Gesendet', uploaded:'Datei hochgeladen',
+  error:'Fehler', descReq:'Bitte Beschreibung angeben',
+  settings:'Einstellungen', changePwd:'Passwort ändern', oldPwd:'Aktuelles Passwort',
+  newPwd:'Neues Passwort (min. 6 Zeichen)', confirmPwd:'Passwort bestätigen',
+  pwdChanged:'Passwort geändert', pwdMismatch:'Passwörter stimmen nicht überein', pwdShort:'Mindestens 6 Zeichen',
+  pwdTitle:'Eigenes Passwort festlegen', pwdMsg:'Der Administrator hat ein temporäres Passwort gesetzt. Bitte ändern Sie es.',
+  logout:'Abmelden',
+  vizShort:'Visualisierung', costShort:'Kosten', dateShort:'Termin',
+}};
+function t(k){return (L[cl] && L[cl][k]) || L.pl[k] || k}
+
+function setLang(l){
+  cl = l; localStorage.setItem('s55_lang', l);
+  document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active', b.dataset.l===l));
+  applyLang();
+}
+
+function applyLang(){
+  const set = (id,txt)=>{const e=document.getElementById(id); if(e) e.textContent=txt};
+  set('llLogin',t('llLogin')); set('llPass',t('llPass')); set('llBtn',t('llBtn'));
+  set('tabList',t('myOrders')); set('tabNew',t('newOrder'));
+  set('pwdTitle',t('pwdTitle')); set('pwdMsg',t('pwdMsg'));
+  set('lNp1',t('newPwd')); set('lNp2',t('confirmPwd')); set('bChPwd',t('changePwd'));
+  set('cfmNo',t('confirmNo'));
+  const bl=document.getElementById('bLogout'); if(bl) bl.title=t('logout');
+  // re-render active view
+  const v = getActiveView();
+  if(v==='list' && allOrders.length) renderTable();
+  if(v==='new') renderNewForm();
+  if(v==='settings') renderSettings();
+}
+function getActiveView(){
+  if(document.getElementById('vList').style.display!=='none') return 'list';
+  if(document.getElementById('vNew').style.display!=='none') return 'new';
+  if(document.getElementById('vSettings').style.display!=='none') return 'settings';
+  return 'detail';
+}
+
+/* ============================================================
+   UTILS
+   ============================================================ */
+function esc(s){if(s==null)return'';const d=document.createElement('div');d.textContent=String(s);return d.innerHTML}
+function fmtD(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString(cl==='de'?'de-DE':cl==='en'?'en-GB':'pl-PL',{year:'numeric',month:'2-digit',day:'2-digit'})}catch(e){return d}}
+function toast(m,type){const e=document.createElement('div');e.className='toast';e.style.background=type==='error'?'var(--no)':'var(--ok)';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
+
+/* ============================================================
+   API
+   ============================================================ */
+function api(data){
+  data.session = session;
+  return new Promise((res,rej)=>{
+    const cb='_c'+Date.now()+'_'+Math.floor(Math.random()*1e6);
+    const p=encodeURIComponent(JSON.stringify(data));
+    const url=API_URL+'?callback='+cb+'&payload='+p;
+    if(url.length>7000) return apiPost(data).then(res).catch(rej);
+    const s=document.createElement('script');
+    const tm=setTimeout(()=>{rm();rej(new Error('Timeout'))},35000);
+    function rm(){clearTimeout(tm);delete window[cb];if(s.parentNode)s.remove()}
+    window[cb]=function(r){rm();if(r&&r.error&&/Sesja wygasła|Session expired/i.test(r.error)){doLogout();return}res(r)};
+    s.src=url;s.onerror=function(){rm();rej(new Error('Network error'))};
+    document.body.appendChild(s);
+  });
+}
+async function apiPost(data){
+  data.session=session;
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),redirect:'follow'});
+  const j=await r.json();
+  if(j&&j.error&&/Sesja wygasła/i.test(j.error)) doLogout();
+  return j;
+}
+
+/* ============================================================
+   LOGIN / LOGOUT
+   ============================================================ */
+async function doLogin(){
+  const login=document.getElementById('inLogin').value.trim();
+  const pass=document.getElementById('inPass').value;
+  const err=document.getElementById('loginErr');
+  const btn=document.getElementById('btnLogin');
+  if(!login||!pass){err.textContent=t('error');return}
+  btn.disabled=true; err.textContent='…';
+  try{
+    const r=await new Promise((res,rej)=>{
+      const cb='_l'+Date.now();
+      const p=encodeURIComponent(JSON.stringify({action:'login',login,password:pass}));
+      const s=document.createElement('script');
+      const tm=setTimeout(()=>{rm();rej(new Error('Timeout'))},35000);
+      function rm(){clearTimeout(tm);delete window[cb];if(s.parentNode)s.remove()}
+      window[cb]=function(r){rm();res(r)};
+      s.src=API_URL+'?callback='+cb+'&payload='+p;
+      s.onerror=function(){rm();rej(new Error('Network error'))};
+      document.body.appendChild(s);
+    });
+    if(r.error) throw new Error(r.error);
+    if(r.role!=='client'&&r.role!=='admin') throw new Error('Panel dla klientów');
+    session=r.session; userName=r.name; userCompany=r.company||''; userLogo=r.logoUrl||'';
+    mustChangePwd=r.mustChangePassword||false;
+    localStorage.setItem('s55_sess',session);
+    localStorage.setItem('s55_name',userName);
+    localStorage.setItem('s55_logo',userLogo);
+    // Login zwraca już listę zleceń — pomijamy osobne zapytanie
+    if(r.orders){ allOrders=r.orders; ordersLoaded=true }
+    showApp();
+  }catch(e){err.textContent=e.message}
+  finally{btn.disabled=false}
+}
+
+function doLogout(){
+  if(session) api({action:'logout'}).catch(()=>{});
+  session=''; userName=''; userLogo='';
+  ['s55_sess','s55_name','s55_logo'].forEach(k=>localStorage.removeItem(k));
+  document.getElementById('loginView').style.display='';
+  document.getElementById('appView').style.display='none';
+  document.getElementById('inPass').value='';
+  document.getElementById('loginErr').textContent='';
+}
+
+function showApp(){
+  document.getElementById('loginView').style.display='none';
+  document.getElementById('appView').style.display='';
+  document.getElementById('userLabel').textContent = userCompany && userCompany!==userName ? userCompany : userName;
+  const lg=document.getElementById('clientLogo');
+  if(userLogo){ lg.src=userLogo; lg.style.display=''; lg.onerror=()=>{lg.style.display='none'} }
+  else lg.style.display='none';
+  document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active', b.dataset.l===cl));
+  if(mustChangePwd){
+    document.getElementById('pwdPrompt').style.display='';
+    document.getElementById('mainArea').style.display='none';
+  }else{
+    document.getElementById('pwdPrompt').style.display='none';
+    document.getElementById('mainArea').style.display='';
+    showView('list');
+  }
+  applyLang();
+}
+
+async function doChangeInitPwd(){
+  const p1=document.getElementById('newPwd1').value, p2=document.getElementById('newPwd2').value;
+  if(p1!==p2){toast(t('pwdMismatch'),'error');return}
+  if(p1.length<6){toast(t('pwdShort'),'error');return}
+  try{
+    const r=await api({action:'changePassword',newPassword:p1});
+    if(r.error)throw new Error(r.error);
+    mustChangePwd=false; toast(t('pwdChanged'));
+    document.getElementById('pwdPrompt').style.display='none';
+    document.getElementById('mainArea').style.display='';
+    showView('list'); applyLang();
+  }catch(e){toast(e.message,'error')}
+}
+
+/* ============================================================
+   VIEWS
+   ============================================================ */
+function showView(v){
+  ['vList','vNew','vDetail','vSettings'].forEach(id=>document.getElementById(id).style.display='none');
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  const map={list:'vList',new:'vNew',detail:'vDetail',settings:'vSettings'};
+  document.getElementById(map[v]).style.display='';
+  if(v==='list'){document.getElementById('tabList').classList.add('active');loadOrders()}
+  if(v==='new'){document.getElementById('tabNew').classList.add('active');renderNewForm()}
+  if(v==='settings'){document.getElementById('tabSet').classList.add('active');renderSettings()}
+}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+function renderSettings(){
+  document.getElementById('vSettings').innerHTML =
+   '<div class="card"><div class="ch">🔑 '+t('changePwd')+'</div>'+
+   '<div class="fg"><label>'+t('oldPwd')+'</label><input id="sOld" type="password"></div>'+
+   '<div class="fg"><label>'+t('newPwd')+'</label><input id="sNew" type="password"></div>'+
+   '<div class="fg"><label>'+t('confirmPwd')+'</label><input id="sNew2" type="password"></div>'+
+   '<button class="btn btn-p" onclick="doChangePwd()">'+t('changePwd')+'</button></div>';
+}
+async function doChangePwd(){
+  const o=document.getElementById('sOld').value,n=document.getElementById('sNew').value,n2=document.getElementById('sNew2').value;
+  if(n!==n2){toast(t('pwdMismatch'),'error');return}
+  if(n.length<6){toast(t('pwdShort'),'error');return}
+  try{const r=await api({action:'changePassword',oldPassword:o,newPassword:n});if(r.error)throw new Error(r.error);
+    toast(t('pwdChanged'));['sOld','sNew','sNew2'].forEach(i=>document.getElementById(i).value='')}
+  catch(e){toast(e.message,'error')}
+}
+
+/* ============================================================
+   NEW ORDER
+   ============================================================ */
+function renderNewForm(){
+  document.getElementById('vNew').innerHTML =
+   '<div class="card"><div class="ch">📋 '+t('newOrder')+'</div>'+
+   '<div class="fg"><label>'+t('clientOrderNo')+'</label><input id="fCNo"></div>'+
+   '<div class="fg"><label>'+t('desc')+' *</label><textarea id="fDesc" rows="3"></textarea></div>'+
+   '<div class="fg"><label>'+t('addr')+'</label><input id="fAddr"></div>'+
+   '<div class="fg"><label>'+t('sender')+'</label><input id="fSender"></div>'+
+   '<div class="fg"><label>'+t('waybill')+'</label><input id="fWaybill"></div>'+
+   '<div class="fg"><label>'+t('files')+'</label>'+
+   '<div class="fuz" onclick="document.getElementById(\'fFiles\').click()">📎 '+t('upload')+'<input type="file" id="fFiles" multiple></div>'+
+   '<div class="fl" id="fList"></div></div>'+
+   '<button class="btn btn-p" onclick="submitOrder()" id="bSubmit">✓ '+t('submit')+'</button></div>';
+  document.getElementById('fFiles').onchange=function(){
+    const el=document.getElementById('fList'); el.innerHTML='';
+    for(const f of this.files) el.innerHTML+='<span class="fc">📎 '+esc(f.name)+'</span>';
+  };
+}
+
+async function submitOrder(){
+  const desc=document.getElementById('fDesc').value.trim();
+  if(!desc){toast(t('descReq'),'error');return}
+  const btn=document.getElementById('bSubmit'); btn.disabled=true;
+  try{
+    const r=await api({action:'createOrder',order:{
+      clientOrderNo:document.getElementById('fCNo').value.trim(),
+      description:desc,
+      deliveryAddr:document.getElementById('fAddr').value.trim(),
+      sender:document.getElementById('fSender').value.trim(),
+      waybill:document.getElementById('fWaybill').value.trim()
+    }});
+    if(r.error)throw new Error(r.error);
+    const fi=document.getElementById('fFiles');
+    if(fi.files.length){for(const f of fi.files) await uploadFile(f,r.orderId,'attachments')}
+    toast(t('created')); showView('list');
+  }catch(e){toast(e.message,'error')}
+  finally{btn.disabled=false}
+}
+
+/* ============================================================
+   ORDER LIST
+   ============================================================ */
+async function loadOrders(force){
+  const el=document.getElementById('vList');
+  // Dane z logowania/init — renderuj natychmiast, bez zapytania
+  if(ordersLoaded && !force){
+    ordersLoaded=false; // kolejne wejścia na listę pobiorą świeże dane
+    if(!allOrders.length){el.innerHTML='<div class="card"><div class="empty">'+t('noOrders')+'</div></div>';return}
+    renderTable();
+    return;
+  }
+  el.innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{
+    const r=await api({action:'getOrders'});
+    if(r.error)throw new Error(r.error);
+    allOrders=r.orders||[];
+    if(!allOrders.length){el.innerHTML='<div class="card"><div class="empty">'+t('noOrders')+'</div></div>';return}
+    renderTable();
+  }catch(e){el.innerHTML='<div class="card" style="color:var(--no);padding:20px">'+esc(e.message)+'</div>'}
+}
+
+const CLIENT_COLS=[
+  {k:'dateCreated',  l:()=>t('date'),        w:'82px'},
+  {k:'description',  l:()=>t('description'), w:''},
+  {k:'status',       l:()=>t('status'),      w:'104px'},
+  {k:'orderNo',      l:()=>t('orderNo'),     w:'92px'},
+  {k:'clientOrderNo',l:()=>t('clientNo'),    w:'92px'},
+  {k:'tracking',     l:()=>t('tracking'),    w:'96px'},
+  {k:'guardian',     l:()=>t('guardian'),    w:'92px'},
+  {k:'_acc',         l:()=>t('acceptances'), w:'150px'},
+];
+
+function renderTable(){
+  const el=document.getElementById('vList');
+  const guardians=[...new Set(allOrders.map(o=>o.guardian).filter(Boolean))].sort();
+  let h='<div class="fbar">';
+  h+='<input type="text" id="fS" placeholder="🔍 '+t('search')+'" oninput="filterTable()">';
+  h+='<select id="fSt" onchange="filterTable()"><option value="">'+t('filterAll')+'</option>'
+    +'<option value="PENDING">'+t('stPending')+'</option>'
+    +'<option value="IN_PROGRESS">'+t('stProgress')+'</option>'
+    +'<option value="DONE">'+t('stDone')+'</option></select>';
+  h+='<select id="fG" onchange="filterTable()"><option value="">— '+t('guardian')+' —</option>'
+    +guardians.map(g=>'<option value="'+esc(g)+'">'+esc(g)+'</option>').join('')+'</select>';
+  h+='<select id="fA" onchange="filterTable()"><option value="">— '+t('acceptances')+' —</option>'
+    +'<option value="viz">'+t('vizShort')+'</option>'
+    +'<option value="cost">'+t('costShort')+'</option>'
+    +'<option value="date">'+t('dateShort')+'</option>'
+    +'<option value="any">✓ '+t('pend')+'</option></select>';
+  h+='</div>';
+  h+='<div class="card" style="padding:0;overflow-x:auto"><table class="otbl"><thead><tr>';
+  CLIENT_COLS.forEach(c=>{
+    const s=sortCol===c.k;
+    h+='<th class="'+(s?'sorted':'')+'" onclick="sortBy(\''+c.k+'\')"'+(c.w?' style="width:'+c.w+'"':'')+'>'+c.l()+'<span class="arr">'+(s?(sortDir==='asc'?'▲':'▼'):'⇅')+'</span></th>';
+  });
+  h+='<th style="width:24px"></th></tr></thead><tbody id="tRows"></tbody></table></div>';
+  el.innerHTML=h;
+  filterTable();
+}
+
+function pendingAcc(o){
+  // Pokazuje tylko pozycje czekające na akceptację, gdzie faktycznie jest co akceptować.
+  // hasViz/hasCost przychodzą z lekkiej listy; vizFiles/costFile z pełnych danych zlecenia.
+  const out=[];
+  if(o.status!=='PENDING') return out;
+  const hasViz  = o.hasViz  !== undefined ? o.hasViz  : !!(o.vizFiles && o.vizFiles.length);
+  const hasCost = o.hasCost !== undefined ? o.hasCost : !!o.costFile;
+  if(o.vizStatus==='PENDING'  && hasViz)  out.push('viz');
+  if(o.costStatus==='PENDING' && hasCost) out.push('cost');
+  if(o.dateStatus==='PENDING' && o.dateProposed) out.push('date');
+  return out;
+}
+function accTags(o){
+  const p=pendingAcc(o);
+  if(!p.length) return '<span style="color:#bbb">—</span>';
+  const m={viz:['atag-v',t('vizShort')],cost:['atag-c',t('costShort')],date:['atag-d',t('dateShort')]};
+  return '<div class="atags">'+p.map(x=>'<span class="atag '+m[x][0]+'">'+m[x][1]+'</span>').join('')+'</div>';
+}
+function statusBadge(s){
+  const m={PENDING:['st-pend',t('stPending')],IN_PROGRESS:['st-prog',t('stProgress')],DONE:['st-done',t('stDone')],CANCELLED:['st-canc',t('stCancel')]};
+  const x=m[s]||['st-pend',s||'—'];
+  return '<span class="st '+x[0]+'">'+x[1]+'</span>';
+}
+
+function filterTable(){
+  const q=(document.getElementById('fS').value||'').toLowerCase();
+  const fSt=document.getElementById('fSt').value;
+  const fG=document.getElementById('fG').value;
+  const fA=document.getElementById('fA').value;
+
+  let items=allOrders.filter(o=>{
+    if(fSt && o.status!==fSt) return false;
+    if(fG && o.guardian!==fG) return false;
+    if(fA){
+      const p=pendingAcc(o);
+      if(fA==='any'){ if(!p.length) return false }
+      else if(!p.includes(fA)) return false;
+    }
+    if(q){
+      const hay=[o.description,o.orderNo,o.clientOrderNo,o.tracking,o.guardian].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  items.sort((a,b)=>{
+    let va=sortVal(a,sortCol), vb=sortVal(b,sortCol);
+    if(va<vb) return sortDir==='asc'?-1:1;
+    if(va>vb) return sortDir==='asc'?1:-1;
+    return 0;
+  });
+
+  let h='';
+  items.forEach(o=>{
+    h+='<tr class="dr" onclick="openOrder(\''+o.id+'\')">';
+    h+='<td class="nowrap" style="color:var(--m);font-size:12px">'+fmtD(o.dateCreated)+'</td>';
+    h+='<td style="font-weight:600">'+esc((o.description||'').substring(0,50))+((o.description||'').length>50?'…':'')+'</td>';
+    h+='<td>'+statusBadge(o.status)+'</td>';
+    h+='<td style="font-size:12px">'+esc(o.orderNo||'—')+'</td>';
+    h+='<td style="font-size:12px">'+esc(o.clientOrderNo||'—')+'</td>';
+    h+='<td style="font-size:12px">'+esc(o.tracking||'—')+'</td>';
+    h+='<td style="font-size:12px;font-weight:600">'+esc(o.guardian||'—')+'</td>';
+    h+='<td>'+accTags(o)+'</td>';
+    h+='<td style="color:#bbb;text-align:right">›</td></tr>';
+  });
+  if(!items.length) h='<tr><td colspan="9" class="empty">'+t('noOrders')+'</td></tr>';
+  document.getElementById('tRows').innerHTML=h;
+}
+
+function sortVal(o,c){
+  switch(c){
+    case'dateCreated':   return o.dateCreated||'';
+    case'description':   return (o.description||'').toLowerCase();
+    case'status':        return o.status||'';
+    case'orderNo':       return (o.orderNo||'').toLowerCase();
+    case'clientOrderNo': return (o.clientOrderNo||'').toLowerCase();
+    case'tracking':      return (o.tracking||'').toLowerCase();
+    case'guardian':      return (o.guardian||'').toLowerCase();
+    case'_acc':          return pendingAcc(o).length + pendingAcc(o).join('');
+    default: return '';
+  }
+}
+function sortBy(c){ if(sortCol===c) sortDir=sortDir==='asc'?'desc':'asc'; else {sortCol=c;sortDir='asc'} renderTable() }
+
+/* ============================================================
+   ORDER DETAIL
+   ============================================================ */
+async function openOrder(id){
+  showViewRaw('detail');
+  const el=document.getElementById('vDetail');
+  el.innerHTML='<button class="btn btn-o btn-sm" onclick="showView(\'list\')">'+t('back')+'</button><div class="loading"><div class="spinner"></div></div>';
+  try{
+    const r=await api({action:'getOrder',orderId:id});
+    if(r.error)throw new Error(r.error);
+    renderDetail(r.order,el);
+  }catch(e){el.innerHTML='<button class="btn btn-o btn-sm" onclick="showView(\'list\')">'+t('back')+'</button><div class="card" style="margin-top:10px;color:var(--no)">'+esc(e.message)+'</div>'}
+}
+function showViewRaw(v){
+  ['vList','vNew','vDetail','vSettings'].forEach(id=>document.getElementById(id).style.display='none');
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.getElementById('v'+v.charAt(0).toUpperCase()+v.slice(1)).style.display='';
+}
+
+function renderDetail(o,el){
+  const inProg = o.status!=='PENDING';
+  let h='<button class="btn btn-o btn-sm" onclick="showView(\'list\')">'+t('back')+'</button>';
+  if(o.status==='IN_PROGRESS' && o.dealDate) h+='<div class="conv-banner" style="margin-top:10px">'+t('converted')+'</div>';
+
+  // INFO
+  h+='<div class="card" style="margin-top:10px"><div class="ch">📋 '+t('info')+'</div><div class="dg">';
+  h+=di(t('registered'),fmtD(o.dateCreated));
+  h+='<div class="di"><div class="lbl">'+t('status')+'</div><div class="val">'+statusBadge(o.status)+'</div></div>';
+  h+=di(t('orderNo'),o.orderNo||'—');
+  h+=di(t('clientNo'),o.clientOrderNo||'—');
+  h+=di(t('description'),o.description||'—');
+  h+=di(t('addr'),o.deliveryAddr||'—');
+  if(o.sender)   h+=di(t('sender'),o.sender);
+  if(o.waybill)  h+=di(t('waybill'),o.waybill);
+  if(o.guardian) h+=di(t('guardian'),o.guardian);
+  if(o.tracking) h+=di(t('tracking'),o.tracking);
+  if(o.shipDate) h+=di(t('shipDate'),fmtD(o.shipDate));
+  h+='</div></div>';
+
+  // ATTACHMENTS (client can upload)
+  h+=fileSec('📎 '+t('attachments'),o.attachments,o.id,'attachments',true);
+
+  // ACCEPTANCE (only while PENDING)
+  if(o.status==='PENDING'){
+    h+='<div class="card"><div class="ch">🎨 '+t('viz')+'</div>'
+      +(o.vizFiles&&o.vizFiles.length?fileList(o.vizFiles):'<p style="color:var(--m);font-size:12px">'+t('waiting')+'</p>')
+      +(o.vizFiles&&o.vizFiles.length?accBox('viz',o.vizStatus,o.vizNotes,o.id):'')+'</div>';
+
+    h+='<div class="card"><div class="ch">💰 '+t('cost')+'</div>'
+      +(o.costFile?'<div class="fl"><a class="fc" href="'+esc(o.costFile.viewUrl||o.costFile.url)+'" target="_blank">📄 '+esc(o.costFile.name)+'</a></div>':'<p style="color:var(--m);font-size:12px">'+t('waiting')+'</p>')
+      +(o.costFile?accBox('cost',o.costStatus,o.costNotes,o.id):'')+'</div>';
+
+    h+='<div class="card"><div class="ch">📅 '+t('dateProp')+'</div>';
+    if(o.dateProposed){
+      h+='<p style="font-size:17px;font-weight:800">'+esc(o.dateProposed)+'</p>';
+      if(o.dateDeadline) h+='<p style="font-size:12px;color:var(--m);margin-top:3px">'+t('dateDl')+': <strong>'+esc(o.dateDeadline)+'</strong></p>';
+      h+=accBox('date',o.dateStatus,o.dateNotes,o.id);
+    } else h+='<p style="color:var(--m);font-size:12px">'+t('waiting')+'</p>';
+    h+='</div>';
+  }
+
+  // PRODUCTION
+  if(o.prodPhotos&&o.prodPhotos.length) h+=fileSec('📸 '+t('prodPhotos'),o.prodPhotos,null,null,false);
+
+  // INVOICES
+  if(o.invoiceFile||o.proformaFile){
+    h+='<div class="card"><div class="ch">🧾 '+t('invoice')+' / '+t('proforma')+'</div><div class="fl">';
+    if(o.invoiceFile)  h+='<a class="fc" href="'+esc(o.invoiceFile.viewUrl||o.invoiceFile.url)+'" target="_blank">📄 '+t('invoice')+'</a>';
+    if(o.proformaFile) h+='<a class="fc" href="'+esc(o.proformaFile.viewUrl||o.proformaFile.url)+'" target="_blank">📄 '+t('proforma')+'</a>';
+    h+='</div></div>';
+  }
+
+  // PAYMENT (client uploads)
+  h+=fileSec('💳 '+t('payConf'),o.paymentConf,o.id,'paymentConf',true);
+
+  // NOTIFICATIONS from us
+  if(o.clientNotifs&&o.clientNotifs.length){
+    h+='<div class="card"><div class="ch">📢 '+t('notifs')+'</div>'+noteList(o.clientNotifs,'ni-notif')+'</div>';
+  }
+
+  // MESSAGES
+  h+='<div class="card"><div class="ch">💬 '+t('notes')+'</div>'+noteList(o.clientNotes,'')
+    +'<div style="margin-top:9px"><div class="fg"><textarea id="nTxt" rows="2" placeholder="'+t('addNote')+'…"></textarea></div>'
+    +'<button class="btn btn-p btn-sm" onclick="sendNote(\''+o.id+'\')">↗ '+t('addNote')+'</button></div></div>';
+
+  // COMPLAINT
+  h+='<div class="card"><div class="ch">⚠️ '+t('complaint')+'</div>'+noteList(o.complaint,'ni-comp')
+    +'<div style="margin-top:9px"><div class="fg"><textarea id="cTxt" rows="2" placeholder="'+t('complaint')+'…"></textarea></div>'
+    +'<button class="btn btn-no btn-sm" onclick="sendComplaint(\''+o.id+'\')">'+t('sendComplaint')+'</button></div></div>';
+
+  el.innerHTML=h;
+}
+
+function di(l,v){return'<div class="di"><div class="lbl">'+l+'</div><div class="val">'+esc(v)+'</div></div>'}
+function fileList(f){
+  const a=Array.isArray(f)?f:[];
+  if(!a.length) return '<p style="color:var(--m);font-size:12px">'+t('noFiles')+'</p>';
+  return '<div class="fl">'+a.map(x=>'<a class="fc" href="'+esc(x.viewUrl||x.url||'#')+'" target="_blank">📎 '+esc(x.name||'Plik')+'</a>').join('')+'</div>';
+}
+function fileSec(title,files,oid,cat,canUp){
+  let h='<div class="card"><div class="ch">'+title+'</div>'+fileList(files);
+  if(canUp&&oid) h+='<div class="fuz" onclick="document.getElementById(\'u_'+cat+'\').click()">📎 '+t('upload')+'<input type="file" id="u_'+cat+'" multiple onchange="handleUp(this,\''+oid+'\',\''+cat+'\')"></div>';
+  h+='</div>';return h;
+}
+function noteList(n,cls){
+  if(!n||!n.length) return '<p style="color:var(--m);font-size:12px">—</p>';
+  return n.map(x=>'<div class="ni '+(cls||'')+'"><div>'+esc(x.text)+'</div><div class="nm">'+fmtD(x.ts)+' · '+esc(x.by||'')+'</div></div>').join('');
+}
+function accBox(field,status,notes,oid){
+  const na=Array.isArray(notes)?notes:[];
+  const sc=status==='YES'?'yes':status==='NO'?'no':'pend';
+  let h='<div class="ab '+sc+'">';
+  if(status==='YES'){
+    h+='<div style="font-weight:800;color:var(--ok)">'+t('accepted')+'</div>';
+  }else{
+    if(status==='NO') h+='<div style="font-weight:800;color:var(--no);margin-bottom:9px">'+t('rejected')+'</div>';
+    h+='<div style="display:flex;gap:7px;flex-wrap:wrap">'
+      +'<button class="btn btn-ok btn-sm" onclick="doAccept(\''+oid+'\',\''+field+'\',true)">✓ '+t('accept')+'</button>'
+      +'<button class="btn btn-no btn-sm" onclick="doAccept(\''+oid+'\',\''+field+'\',false)">✕ '+t('reject')+'</button></div>';
+  }
+  if(na.length){
+    h+='<div style="margin-top:10px;font-size:10px;font-weight:800;color:var(--m);text-transform:uppercase">'+t('prevNotes')+'</div>';
+    na.forEach(n=>{h+='<div class="ni" style="margin-top:5px"><div>'+esc(n.text)+'</div><div class="nm">'+fmtD(n.ts)+'</div></div>'});
+  }
+  if(status!=='YES'){
+    h+='<div style="margin-top:9px"><textarea id="nt_'+field+'" rows="2" style="width:100%;padding:8px 10px;border:1px solid var(--yw);border-radius:6px;font-size:12px;background:#fffef5;font-family:inherit" placeholder="'+t('noteReq')+'…"></textarea></div>';
+  }
+  h+='</div>';return h;
+}
+
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+function doAccept(oid,field,accept){
+  if(accept){
+    document.getElementById('cfmTitle').textContent=t('confirmTitle');
+    document.getElementById('cfmMsg').textContent=t('confirmMsg');
+    document.getElementById('cfmOk').textContent=t('confirmYes');
+    document.getElementById('cfmNo').textContent=t('confirmNo');
+    showCfm(async()=>{
+      try{
+        const r=await api({action:'accept',orderId:oid,field,accept:true});
+        if(r.error)throw new Error(r.error);
+        if(r.converted){toast(t('converted'));setTimeout(()=>showView('list'),1600)}
+        else{toast(t('accepted'));openOrder(oid)}
+      }catch(e){toast(e.message,'error')}
+    });
+  }else{
+    const el=document.getElementById('nt_'+field);
+    const note=el?el.value.trim():'';
+    if(!note){toast(t('noteReq'),'error');if(el)el.focus();return}
+    (async()=>{
+      try{const r=await api({action:'accept',orderId:oid,field,accept:false,note});if(r.error)throw new Error(r.error);toast(t('sent'));openOrder(oid)}
+      catch(e){toast(e.message,'error')}
+    })();
+  }
+}
+async function sendNote(oid){
+  const el=document.getElementById('nTxt');const txt=el?el.value.trim():'';
+  if(!txt)return;
+  try{const r=await api({action:'addNote',orderId:oid,text:txt});if(r.error)throw new Error(r.error);toast(t('sent'));openOrder(oid)}
+  catch(e){toast(e.message,'error')}
+}
+async function sendComplaint(oid){
+  const el=document.getElementById('cTxt');const txt=el?el.value.trim():'';
+  if(!txt)return;
+  try{const r=await api({action:'addComplaint',orderId:oid,text:txt});if(r.error)throw new Error(r.error);toast(t('sent'));openOrder(oid)}
+  catch(e){toast(e.message,'error')}
+}
+async function handleUp(inp,oid,cat){
+  if(!inp.files.length)return;
+  toast('…');
+  for(const f of inp.files){ await uploadFile(f,oid,cat) }
+  toast(t('uploaded')); openOrder(oid);
+}
+// Próg: powyżej 3MB base64 wysyłamy fragmentami (szybciej i bez timeoutów)
+const CHUNK_THRESHOLD = 3000000;
+const CHUNK_SIZE = 80000;
+
+function uploadFile(file,oid,cat){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=async function(){
+      try{
+        const b64=r.result.split(',')[1];
+        const meta={fileName:file.name,mimeType:file.type||'application/octet-stream',orderId:oid,fileCategory:cat};
+        if(b64.length<=CHUNK_THRESHOLD){
+          const out=await apiPost(Object.assign({action:'uploadClientFile',base64:b64},meta));
+          if(out&&out.error)throw new Error(out.error);
+          res(out);
+        }else{
+          res(await uploadChunked(b64,meta));
+        }
+      }catch(e){rej(e)}
+    };
+    r.onerror=rej; r.readAsDataURL(file);
+  });
+}
+
+async function uploadChunked(b64,meta){
+  const uploadId='u'+Date.now()+Math.floor(Math.random()*1e6);
+  const total=Math.ceil(b64.length/CHUNK_SIZE);
+  for(let i=0;i<total;i++){
+    const chunk=b64.substr(i*CHUNK_SIZE,CHUNK_SIZE);
+    const out=await apiPost({action:'uploadChunk',uploadId,chunkIndex:i,chunk});
+    if(out&&out.error)throw new Error(out.error);
+  }
+  const fin=await apiPost(Object.assign({action:'uploadFinish',uploadId,totalChunks:total},meta));
+  if(fin&&fin.error)throw new Error(fin.error);
+  return fin;
+}
+
+function showCfm(cb){document.getElementById('cfmBox').style.display='';cfmCb=cb}
+function closeCfm(){document.getElementById('cfmBox').style.display='none';cfmCb=null}
+function execCfm(){if(cfmCb)cfmCb();closeCfm()}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.getElementById('inPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inPass').focus()});
+
+(function init(){
+  document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active', b.dataset.l===cl));
+  if(session){
+    userName=localStorage.getItem('s55_name')||'';
+    userLogo=localStorage.getItem('s55_logo')||'';
+    // Jedno wywołanie zamiast dwóch: dane użytkownika + lista zleceń
+    api({action:'init'}).then(r=>{
+      if(r.error||!r.success){doLogout();return}
+      userName=r.me.name;userCompany=r.me.company||'';userLogo=r.me.logoUrl||'';
+      localStorage.setItem('s55_name',userName);
+      localStorage.setItem('s55_logo',userLogo);
+      allOrders=r.orders||[];ordersLoaded=true;
+      mustChangePwd=false; showApp();
+    }).catch(()=>doLogout());
+  }else applyLang();
+})();
+</script>
+</body>
+</html>

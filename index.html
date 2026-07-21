@@ -350,21 +350,31 @@ function toast(m,type){const e=document.createElement('div');e.className='toast'
 /* ============================================================
    API
    ============================================================ */
-function api(data){
-  data.session = session;
+async function api(data){
+  data.session=session;
+  const payload=JSON.stringify(data);
+  if(payload.length<5500) return apiGet_(data,payload);
+  return apiPost_(payload);
+}
+function apiGet_(data,payload){
   return new Promise((res,rej)=>{
-    const cb='_c'+Date.now()+'_'+Math.floor(Math.random()*1e6);
-    const p=encodeURIComponent(JSON.stringify(data));
-    const url=API_URL+'?callback='+cb+'&payload='+p;
-    if(url.length>7000) return apiPost(data).then(res).catch(rej);
+    const cb='_cb'+Date.now()+'_'+(Math.random()*1e9|0);
+    const url=API_URL+'?callback='+cb+'&payload='+encodeURIComponent(payload);
     const s=document.createElement('script');
-    const tm=setTimeout(()=>{rm();rej(new Error('Timeout'))},35000);
-    function rm(){clearTimeout(tm);delete window[cb];if(s.parentNode)s.remove()}
-    window[cb]=function(r){rm();if(r&&r.error&&/Sesja wygasła|Session expired/i.test(r.error)){doLogout();return}res(r)};
-    s.src=url;s.onerror=function(){rm();rej(new Error('Network error'))};
-    document.body.appendChild(s);
+    const tm=setTimeout(()=>{rm();rej(new Error('Timeout'))},30000);
+    function rm(){clearTimeout(tm);delete window[cb];s.parentNode&&s.remove()}
+    window[cb]=function(r){rm();if(r&&r.error&&/Sesja wygasła/i.test(r.error))doLogout();else res(r)};
+    s.onerror=function(){rm();apiPost_(payload).then(res).catch(rej)};
+    s.src=url;document.body.appendChild(s);
   });
 }
+async function apiPost_(payload){
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:payload,redirect:'follow'});
+  const j=await r.json();
+  if(j&&j.error&&/Sesja wygasła/i.test(j.error))doLogout();
+  return j;
+}
+async function apiPost(data){data.session=session;return apiPost_(JSON.stringify(data));}
 async function apiPost(data){
   data.session=session;
   const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),redirect:'follow'});

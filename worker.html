@@ -317,28 +317,34 @@ function fmtDT(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt))return
 function toast(m,type){const e=document.createElement('div');e.className='toast';e.style.background=type==='error'?'var(--no)':'var(--ok)';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
 
 // ============ API ============
-function api(data){
+// POST jest szybszy niż JSONP (brak overhead script tagu)
+// Małe requesty (<6000 znaków) przez JSONP (GET), reszta przez POST
+async function api(data){
   data.session=session;
+  const payload=JSON.stringify(data);
+  if(payload.length<5500) return apiGet_(data,payload);
+  return apiPost_(payload);
+}
+function apiGet_(data,payload){
   return new Promise((res,rej)=>{
-    const cb='_w'+Date.now()+'_'+Math.floor(Math.random()*1e6);
-    const p=encodeURIComponent(JSON.stringify(data));
-    const url=API_URL+'?callback='+cb+'&payload='+p;
-    if(url.length>7000)return apiPost(data).then(res).catch(rej);
+    const cb='_w'+Date.now()+'_'+(Math.random()*1e9|0);
+    const url=API_URL+'?callback='+cb+'&payload='+encodeURIComponent(payload);
     const s=document.createElement('script');
-    const tm=setTimeout(()=>{rm();rej(new Error('Timeout'))},35000);
-    function rm(){clearTimeout(tm);delete window[cb];if(s.parentNode)s.remove()}
-    window[cb]=function(r){rm();if(r&&r.error&&/Sesja wygasła/i.test(r.error)){doLogout();return}res(r)};
-    s.src=url;s.onerror=function(){rm();rej(new Error('Network error'))};
-    document.body.appendChild(s);
+    const tm=setTimeout(()=>{rm();rej(new Error('Timeout'))},30000);
+    function rm(){clearTimeout(tm);delete window[cb];s.parentNode&&s.remove()}
+    window[cb]=function(r){rm();if(r&&r.error&&/Sesja wygasła/i.test(r.error))doLogout();else res(r)};
+    s.onerror=function(){rm();apiPost_(payload).then(res).catch(rej)};
+    s.src=url;document.body.appendChild(s);
   });
 }
-async function apiPost(data){
-  data.session=session;
-  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data),redirect:'follow'});
+async function apiPost_(payload){
+  const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:payload,redirect:'follow'});
   const j=await r.json();
   if(j&&j.error&&/Sesja wygasła/i.test(j.error))doLogout();
   return j;
 }
+// Alias dla plików (zawsze POST)
+async function apiPost(data){data.session=session;return apiPost_(JSON.stringify(data));}
 
 // ============ LOGIN ============
 async function doLogin(){
@@ -685,8 +691,8 @@ function renderDetail(o){
   h+=upSec('📄 '+t('profSec'),'proformaFile',o.proformaFile?[o.proformaFile]:[]);
 
   // CLIENT FILES (read-only)
-  h+='<div class="card"><div class="ch">📎 '+t('attSec')+'</div>'+fileList(o.attachments)+'</div>';
-  h+='<div class="card"><div class="ch">💳 '+t('payConfSec')+'</div>'+fileList(o.paymentConf)+'</div>';
+  h+=upSec('📎 '+t('attSec'),'attachments',o.attachments);
+  h+=upSec('💳 '+t('payConfSec'),'paymentConf',o.paymentConf);
 
   // TEAM NOTES
   h+='<div class="card"><div class="ch">🔒 '+t('teamNotes')+' <span style="font-size:10px;font-weight:400;color:var(--m);text-transform:none">'+t('teamNotesInfo')+'</span></div>'
@@ -833,6 +839,12 @@ function noteList(n,cls){
   return n.map(x=>'<div class="ni '+(cls||'')+'"><div style="font-size:14px">'+esc(x.text)+'</div><div class="nm">'+fmtDT(x.ts)+' · '+esc(x.by||'')+'</div></div>').join('');
 }
 
+// Szybka aktualizacja lokalnego obiektu bez full reload
+function patchOrder_(patch){
+  if(!curOrder)return;
+  Object.assign(curOrder,patch);
+}
+
 async function saveOrder(){
   const fields={
     orderNo:      document.getElementById('eOrderNo').value.trim(),
@@ -846,7 +858,15 @@ async function saveOrder(){
     sender:       document.getElementById('eSender').value.trim(),
     deliveryAddr: document.getElementById('eAddr').value.trim(),
   };
-  try{const r=await api({action:'updateOrder',orderId:curId,fields});if(r.error)throw new Error(r.error);toast(t('saved'));openOrder(curId)}catch(e){toast(e.message,'error')}
+  try{
+    const r=await api({action:'updateOrder',orderId:curId,fields});
+    if(r.error)throw new Error(r.error);
+    toast(t('saved'));
+    // Odśwież tylko dane bez spinnera
+    api({action:'getOrder',orderId:curId}).then(r2=>{
+      if(r2.success){curOrder=r2.order;renderDetail(r2.order);}
+    });
+  }catch(e){toast(e.message,'error')}
 }
 
 // CHUNK UPLOAD

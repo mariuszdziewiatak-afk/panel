@@ -51,7 +51,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ch{font-size:13px;font-weight:800;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid var(--yw);text-transform:uppercase;letter-spacing:.4px}
 .fg{margin-bottom:11px}
 .fg label{display:block;font-size:11px;font-weight:700;margin-bottom:4px;color:var(--m);text-transform:uppercase;letter-spacing:.4px}
-.fg input,.fg textarea,.fg select{width:100%;padding:8px 11px;border:1px solid var(--b);border-radius:6px;font-size:13px;font-family:inherit;background:#2a2a2a;color:#e8e8e8;-webkit-text-fill-color:#e8e8e8}
+.fg input,.fg textarea,.fg select{width:100%;padding:9px 12px;border:1px solid var(--b);border-radius:6px;font-size:14px;font-family:inherit;background:#2a2a2a;color:#e8e8e8;-webkit-text-fill-color:#e8e8e8}
 .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
 textarea{resize:vertical;min-height:62px}
 .btn{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
@@ -59,11 +59,11 @@ textarea{resize:vertical;min-height:62px}
 .btn-ok{background:var(--ok);color:#fff}.btn-no{background:var(--no);color:#fff}
 .btn-o{background:none;border:1px solid #555;color:#ccc}.btn-o:hover{background:#333}
 .btn-sm{padding:5px 11px;font-size:12px}.btn:disabled{opacity:.4;cursor:not-allowed}
-table.otbl{width:100%;border-collapse:collapse;font-size:13px}
+table.otbl{width:100%;border-collapse:collapse;font-size:13px;line-height:1.5}
 .otbl th{text-align:left;padding:10px;background:var(--bk);color:#bbb;font-size:10px;font-weight:800;border-bottom:2px solid var(--yw);cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
 .otbl th:hover{color:var(--yw)}.otbl th.sorted{color:var(--yw)}
 .otbl th .arr{font-size:8px;margin-left:3px;opacity:.4}.otbl th.sorted .arr{opacity:1}
-.otbl td{padding:9px 10px;border-bottom:1px solid var(--b);vertical-align:middle}
+.otbl td{padding:10px 10px;border-bottom:1px solid var(--b);vertical-align:middle;font-size:13px}
 .otbl tr.dr{cursor:pointer}.otbl tr.dr:hover td{background:#3a3200}
 .nowrap{white-space:nowrap}
 .st{display:inline-block;padding:3px 9px;border-radius:11px;font-size:10px;font-weight:800;white-space:nowrap}
@@ -272,6 +272,7 @@ en:{
   pwdChanged:'Password changed', pwdMismatch:'Passwords do not match', pwdShort:'Minimum 6 characters',
   pwdTitle:'Set your own password', pwdMsg:'The administrator set a temporary password. Please change it to continue.',
   logout:'Logout',
+  deadlinePassed:'Deadline passed',
   vizShort:'Visualization', costShort:'Costs', dateShort:'Date',
 },
 de:{
@@ -305,6 +306,7 @@ de:{
   pwdChanged:'Passwort geändert', pwdMismatch:'Passwörter stimmen nicht überein', pwdShort:'Mindestens 6 Zeichen',
   pwdTitle:'Eigenes Passwort festlegen', pwdMsg:'Der Administrator hat ein temporäres Passwort gesetzt. Bitte ändern Sie es.',
   logout:'Abmelden',
+  deadlinePassed:'Frist abgelaufen',
   vizShort:'Visualisierung', costShort:'Kosten', dateShort:'Termin',
 }};
 function t(k){return (L[cl] && L[cl][k]) || L.pl[k] || k}
@@ -558,10 +560,10 @@ async function loadOrders(force){
 
 const CLIENT_COLS=[
   {k:'dateCreated',  l:()=>t('date'),        w:'82px'},
+  {k:'clientOrderNo',l:()=>t('clientNo'),    w:'92px'},
   {k:'description',  l:()=>t('description'), w:''},
   {k:'status',       l:()=>t('status'),      w:'104px'},
   {k:'orderNo',      l:()=>t('orderNo'),     w:'92px'},
-  {k:'clientOrderNo',l:()=>t('clientNo'),    w:'92px'},
   {k:'tracking',     l:()=>t('tracking'),    w:'96px'},
   {k:'guardian',     l:()=>t('guardian'),    w:'92px'},
   {k:'_acc',         l:()=>t('acceptances'), w:'150px'},
@@ -595,22 +597,27 @@ function renderTable(){
 }
 
 function pendingAcc(o){
-  // Pokazuje tylko pozycje czekające na akceptację, gdzie faktycznie jest co akceptować.
-  // hasViz/hasCost przychodzą z lekkiej listy; vizFiles/costFile z pełnych danych zlecenia.
   const out=[];
   if(o.status!=='PENDING') return out;
   const hasViz  = o.hasViz  !== undefined ? o.hasViz  : !!(o.vizFiles && o.vizFiles.length);
   const hasCost = o.hasCost !== undefined ? o.hasCost : !!o.costFile;
+  // Wizualizacja — pokazuj gdy PENDING i jest plik (lub był odrzucony i dodano nowy = reset do PENDING)
   if(o.vizStatus==='PENDING'  && hasViz)  out.push('viz');
   if(o.costStatus==='PENDING' && hasCost) out.push('cost');
-  if(o.dateStatus==='PENDING' && o.dateProposed) out.push('date');
+  // Termin — gdy PENDING i jest data LUB deadline minął
+  if(o.dateStatus==='PENDING' && (o.dateProposed || o.deadlinePassed)) out.push('date');
   return out;
 }
 function accTags(o){
   const p=pendingAcc(o);
   if(!p.length) return '<span style="color:#bbb">—</span>';
   const m={viz:['atag-v',t('vizShort')],cost:['atag-c',t('costShort')],date:['atag-d',t('dateShort')]};
-  return '<div class="atags">'+p.map(x=>'<span class="atag '+m[x][0]+'">'+m[x][1]+'</span>').join('')+'</div>';
+  return '<div class="atags">'+p.map(x=>{
+    let lbl=m[x][1];
+    // Deadline minął — oznacz wykrzyknikiem
+    if(x==='date'&&o.deadlinePassed) lbl='⚠ '+lbl;
+    return '<span class="atag '+m[x][0]+'">'+lbl+'</span>';
+  }).join('')+'</div>';
 }
 function statusBadge(s){
   const m={PENDING:['st-pend',t('stPending')],IN_PROGRESS:['st-prog',t('stProgress')],DONE:['st-done',t('stDone')],CANCELLED:['st-canc',t('stCancel')]};
@@ -650,10 +657,10 @@ function filterTable(){
   items.forEach(o=>{
     h+='<tr class="dr" onclick="openOrder(\''+o.id+'\')">';
     h+='<td class="nowrap" style="color:var(--m);font-size:12px">'+fmtD(o.dateCreated)+'</td>';
+    h+='<td style="font-size:12px">'+esc(o.clientOrderNo||'—')+'</td>';
     h+='<td style="font-weight:600">'+esc((o.description||'').substring(0,50))+((o.description||'').length>50?'…':'')+'</td>';
     h+='<td>'+statusBadge(o.status)+'</td>';
     h+='<td style="font-size:12px">'+esc(o.orderNo||'—')+'</td>';
-    h+='<td style="font-size:12px">'+esc(o.clientOrderNo||'—')+'</td>';
     h+='<td style="font-size:12px">'+esc(o.tracking||'—')+'</td>';
     h+='<td style="font-size:12px;font-weight:600">'+esc(o.guardian||'—')+'</td>';
     h+='<td>'+accTags(o)+'</td>';
@@ -731,11 +738,14 @@ function renderDetail(o,el){
       +(o.costFile?accBox('cost',o.costStatus,o.costNotes,o.id):'')+'</div>';
 
     h+='<div class="card"><div class="ch">📅 '+t('dateProp')+'</div>';
-    if(o.dateProposed){
-      h+='<p style="font-size:17px;font-weight:800">'+esc(o.dateProposed)+'</p>';
-      if(o.dateDeadline) h+='<p style="font-size:12px;color:var(--m);margin-top:3px">'+t('dateDl')+': <strong>'+esc(o.dateDeadline)+'</strong></p>';
+    if(o.dateProposed||o.deadlinePassed){
+      if(o.dateProposed)h+='<p style="font-size:17px;font-weight:800">'+esc(o.dateProposed)+'</p>';
+      if(o.dateDeadline){
+        const dlPast=o.deadlinePassed;
+        h+='<p style="font-size:13px;margin-top:4px;color:'+(dlPast?'var(--no)':'var(--m)')+'">'+(dlPast?'⚠ ':'')+t('dateDl')+': <strong>'+esc(o.dateDeadline)+'</strong>'+(dlPast?' — '+t('deadlinePassed'):'')+'</p>';
+      }
       h+=accBox('date',o.dateStatus,o.dateNotes,o.id);
-    } else h+='<p style="color:var(--m);font-size:12px">'+t('waiting')+'</p>';
+    } else h+='<p style="color:var(--m);font-size:13px">'+t('waiting')+'</p>';
     h+='</div>';
   }
 
@@ -910,7 +920,6 @@ document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='En
   if(session){
     userName=localStorage.getItem('s55_name')||'';
     userLogo=localStorage.getItem('s55_logo')||'';
-    // Jedno wywołanie zamiast dwóch: dane użytkownika + lista zleceń
     api({action:'init'}).then(r=>{
       if(r.error||!r.success){doLogout();return}
       userName=r.me.name;userCompany=r.me.company||'';userLogo=r.me.logoUrl||'';
@@ -918,6 +927,8 @@ document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='En
       localStorage.setItem('s55_logo',userLogo);
       allOrders=r.orders||[];ordersLoaded=true;
       mustChangePwd=false; showApp();
+      // Odświeżaj sesję co 20 minut — zapobiega wylogowaniu przy długiej pracy
+      setInterval(()=>{if(session)api({action:'refreshSession'}).catch(()=>{})}, 20*60*1000);
     }).catch(()=>doLogout());
   }else applyLang();
 })();

@@ -4,160 +4,315 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Pracownika — studio55</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
 <style>
-:root{--bk:#1a1a1a;--bk2:#242424;--bk3:#333;--yw:#F5C518;--yw-d:#D4A800;--yw-l:#FFF8DC;--bg:#1a1a1a;--s:#242424;--b:#3a3a3a;--t:#e8e8e8;--m:#999;--r:8px;--ok:#16a34a;--okb:#dcfce7;--no:#dc2626;--nob:#fee2e2;--bl:#3b82f6;--blb:#eff6ff}
+:root{--bk:#1a1a1a;--bk2:#242424;--bk3:#2a2a2a;--yw:#F5C518;--yw-d:#D4A800;--yw-l:#3a3200;--bg:#1a1a1a;--s:#2a2a2a;--b:#3a3a3a;--t:#e8e8e8;--m:#999;--r:8px;--ok:#16a34a;--okb:#14532d;--no:#dc2626;--nob:#450a0a;--bl:#3b82f6;--blb:#1e3a5f}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bk);color:var(--t);line-height:1.5}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bk);color:var(--t);line-height:1.6;font-size:14px}
+
+/* LOGIN */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bk);padding:20px}
-.login-box{background:var(--bk2);border:1px solid var(--bk3);border-radius:12px;padding:36px;width:100%;max-width:400px}
+.login-box{background:var(--bk2);border:1px solid var(--b);border-radius:12px;padding:36px;width:100%;max-width:400px}
 .login-logo{text-align:center;margin-bottom:26px}
-.login-logo .brand{color:var(--yw);font-size:26px;font-weight:900;letter-spacing:-.5px}
+.login-logo .brand{color:var(--yw);font-size:26px;font-weight:900}
 .login-logo .sub{color:#777;font-size:11px;letter-spacing:2px;margin-top:2px}
-.login-box .fg{margin-bottom:14px}
-.login-box label{display:block;font-size:11px;font-weight:700;margin-bottom:5px;color:#999;text-transform:uppercase;letter-spacing:.5px}
-.login-box input{width:100%;padding:11px 14px;background:#333!important;border:1px solid #444;border-radius:6px;font-size:14px;color:#fff!important;-webkit-text-fill-color:#fff!important;font-family:inherit}
-.login-box input:-webkit-autofill,.login-box input:-webkit-autofill:hover,.login-box input:-webkit-autofill:focus,.login-box input:-webkit-autofill:active{-webkit-text-fill-color:#fff!important;-webkit-box-shadow:0 0 0 1000px #333 inset!important;caret-color:#fff;transition:background-color 99999s ease 0s}
-.login-box input:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
-.btn-login{width:100%;padding:12px;background:var(--yw);color:var(--bk);border:none;border-radius:6px;font-size:15px;font-weight:800;cursor:pointer;margin-top:6px}
+.lbl{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:#aaa;text-transform:uppercase;letter-spacing:.5px}
+.inp{width:100%;padding:11px 14px;background:var(--bk3)!important;border:1px solid #444;border-radius:6px;font-size:15px;color:#fff!important;-webkit-text-fill-color:#fff!important;font-family:inherit}
+.inp:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
+.inp:-webkit-autofill,.inp:-webkit-autofill:hover,.inp:-webkit-autofill:focus{-webkit-text-fill-color:#fff!important;-webkit-box-shadow:0 0 0 1000px #2a2a2a inset!important;caret-color:#fff;transition:background-color 99999s ease 0s}
+.btn-login{width:100%;padding:13px;background:var(--yw);color:var(--bk);border:none;border-radius:6px;font-size:16px;font-weight:800;cursor:pointer;margin-top:8px}
 .btn-login:hover{background:var(--yw-d)}.btn-login:disabled{opacity:.5}
 .login-err{color:#f87171;font-size:13px;margin-top:10px;text-align:center;min-height:18px}
-.hdr{background:var(--bk);display:flex;align-items:center;justify-content:flex-end;gap:8px;height:46px;border-bottom:2px solid var(--yw);position:sticky;top:0;z-index:100;padding:0 16px}
-.layout{display:grid;grid-template-columns:160px 1fr;min-height:calc(100vh - 46px)}
-.logo-col{background:#111;display:flex;align-items:flex-start;justify-content:center;padding:20px 8px;position:sticky;top:46px;height:calc(100vh - 46px)}
-.logo-col img{max-width:144px;max-height:140px;object-fit:contain}
-.logo-txt{color:var(--yw);font-size:18px;font-weight:900;text-align:center;margin-top:8px}
-.hdr-brand{display:none}
 
-.hdr-r{display:flex;align-items:center;gap:8px}
-.role-b{background:var(--yw);color:var(--bk);font-size:10px;font-weight:900;padding:4px 9px;border-radius:11px;text-transform:uppercase}
-.ub{font-size:12px;color:#bbb;background:var(--bk2);padding:4px 11px;border-radius:12px;border:1px solid #3a3a3a}
-.btn-logout{background:none;border:1px solid #444;padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;color:#888;font-weight:700}
+/* HEADER */
+.hdr{background:var(--bk2);display:flex;align-items:center;justify-content:flex-end;gap:10px;height:48px;border-bottom:2px solid var(--yw);position:sticky;top:0;z-index:100;padding:0 16px}
+.role-b{background:var(--yw);color:var(--bk);font-size:10px;font-weight:900;padding:4px 10px;border-radius:11px;text-transform:uppercase}
+.ub{font-size:13px;color:#ccc;background:var(--bk3);padding:4px 12px;border-radius:12px;border:1px solid var(--b);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb{background:none;border:1px solid #444;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;color:#999;font-weight:700}
+.lb:hover{border-color:var(--yw);color:var(--yw)}.lb.active{background:var(--yw);color:var(--bk);border-color:var(--yw)}
+.btn-logout{background:none;border:1px solid #444;padding:5px 12px;border-radius:6px;font-size:13px;cursor:pointer;color:#888;font-weight:700}
 .btn-logout:hover{border-color:var(--no);color:var(--no)}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:150px 1fr;min-height:calc(100vh - 48px)}
+.logo-col{background:#111;display:flex;flex-direction:column;align-items:center;padding:20px 8px;position:sticky;top:48px;height:calc(100vh - 48px);gap:12px}
+.logo-col img{max-width:134px;max-height:120px;object-fit:contain}
+.logo-txt{color:var(--yw);font-size:16px;font-weight:900;text-align:center}
 .cnt{padding:16px;min-width:0}
-.card{background:#2a2a2a;border:1px solid #3a3a3a;border-radius:var(--r);padding:16px;margin-bottom:12px}
-.ch{font-size:13px;font-weight:800;margin-bottom:11px;padding-bottom:8px;border-bottom:2px solid var(--yw);text-transform:uppercase;letter-spacing:.4px;display:flex;justify-content:space-between;align-items:center}
-.fg{margin-bottom:11px}
-.fg label{display:block;font-size:10px;font-weight:800;margin-bottom:4px;color:var(--m);text-transform:uppercase;letter-spacing:.4px}
-.fg input,.fg textarea,.fg select{width:100%;padding:8px 11px;border:1px solid var(--b);border-radius:6px;font-size:13px;font-family:inherit;background:#2a2a2a;color:#e8e8e8;-webkit-text-fill-color:#e8e8e8}
-.fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.15)}
-textarea{resize:vertical;min-height:60px}
-.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* CARD */
+.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.ch{font-size:12px;font-weight:800;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--yw);text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;color:var(--t)}
+
+/* FORMS */
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:11px;font-weight:700;margin-bottom:4px;color:var(--m);text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg textarea,.fg select{width:100%;padding:9px 12px;border:1px solid var(--b);border-radius:6px;font-size:14px;font-family:inherit;background:var(--bk3);color:var(--t);-webkit-text-fill-color:var(--t)}
+.fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.12)}
+.fg select option{background:var(--bk3);color:var(--t)}
+textarea{resize:vertical;min-height:64px}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:9px 16px;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .12s}
 .btn-p{background:var(--yw);color:var(--bk)}.btn-p:hover{background:var(--yw-d)}
-.btn-o{background:none;border:1px solid #555;color:#ccc}.btn-o:hover{background:#333}
-.btn-sm{padding:5px 11px;font-size:12px}.btn:disabled{opacity:.4}
+.btn-o{background:none;border:1px solid var(--b);color:var(--t)}.btn-o:hover{background:var(--bk3)}
+.btn-no{background:var(--no);color:#fff}.btn-sm{padding:5px 11px;font-size:12px}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* TABLE */
 table.otbl{width:100%;border-collapse:collapse;font-size:13px}
-.otbl th{text-align:left;padding:10px 8px;background:var(--bk);color:#bbb;font-size:10px;font-weight:800;border-bottom:2px solid var(--yw);cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+.otbl th{text-align:left;padding:10px 8px;background:var(--bk2);color:#bbb;font-size:11px;font-weight:800;border-bottom:2px solid var(--yw);cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px}
 .otbl th:hover{color:var(--yw)}.otbl th.sorted{color:var(--yw)}
-.otbl th .arr{font-size:8px;margin-left:3px;opacity:.4}.otbl th.sorted .arr{opacity:1}
-.otbl td{padding:9px 8px;border-bottom:1px solid var(--b)}
-.otbl tr.dr{cursor:pointer}.otbl tr.dr:hover td{background:#3a3200}
+.otbl th .arr{font-size:9px;margin-left:3px;opacity:.4}.otbl th.sorted .arr{opacity:1}
+.otbl td{padding:9px 8px;border-bottom:1px solid var(--b);vertical-align:middle}
+.otbl tr.dr{cursor:pointer}.otbl tr.dr:hover td{background:var(--yw-l)}
 .nowrap{white-space:nowrap}
-.st{display:inline-block;padding:3px 9px;border-radius:11px;font-size:10px;font-weight:800;white-space:nowrap}
-.st-pend{background:#3a3a3a;color:var(--yw)}.st-prog{background:var(--yw-l);color:#8a6d00;border:1px solid var(--yw)}
-.st-done{background:var(--okb);color:var(--ok)}.st-canc{background:var(--nob);color:var(--no)}
-.dots{display:inline-flex;gap:3px;align-items:center}
-.dot{width:9px;height:9px;border-radius:50%;display:inline-block}
-.d-y{background:var(--ok)}.d-n{background:var(--no)}.d-p{background:#ccc}
-.fbar{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
-.fbar select option{background:#2a2a2a;color:#e8e8e8}.fbar input,.fbar select{padding:7px 10px;border:1px solid #555;border-radius:6px;font-size:12px;font-family:inherit;background:#2a2a2a;color:#e8e8e8;-webkit-text-fill-color:#e8e8e8}
-.fbar input:focus,.fbar select:focus{outline:none;border-color:var(--yw);background:#3a3a3a;color:#e8e8e8;-webkit-text-fill-color:#e8e8e8}
+
+/* FILTER BAR */
+.fbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.fbar input,.fbar select{padding:8px 11px;border:1px solid var(--b);border-radius:6px;font-size:13px;font-family:inherit;background:var(--bk3);color:var(--t);-webkit-text-fill-color:var(--t)}
+.fbar select option{background:var(--bk3);color:var(--t)}
+.fbar input:focus,.fbar select:focus{outline:none;border-color:var(--yw)}
 .fbar input[type=text]{min-width:200px;flex:1}
-.dg{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.dg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px}
-.di .lbl{font-size:10px;color:var(--m);font-weight:800;text-transform:uppercase}
-.di .val{font-size:13px;margin-top:1px}
-.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
-.fc{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;background:#333;border:1px solid #444;border-radius:6px;font-size:12px;text-decoration:none;color:var(--t);font-weight:600}
-.fc:hover{border-color:var(--yw);background:#3a3200}
-.fuz{border:2px dashed #555;border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;font-size:12px;color:#aaa;margin-top:7px;font-weight:600}
-.fuz:hover{border-color:var(--yw);background:#3a3200}.fuz input{display:none}
-.ni{padding:9px 11px;background:#333;border-radius:6px;margin-bottom:6px;font-size:13px;border-left:3px solid var(--yw)}
-.ni-team{border-left-color:#8b5cf6;background:#faf5ff}
+
+/* STATUS */
+.st{display:inline-block;padding:3px 10px;border-radius:11px;font-size:11px;font-weight:800;white-space:nowrap}
+.st-pend{background:#333;color:var(--yw)}.st-prog{background:var(--yw-l);color:var(--yw)}
+.st-done{background:var(--okb);color:#4ade80}.st-canc{background:var(--nob);color:#f87171}
+
+/* DOTS */
+.dots{display:inline-flex;gap:5px;align-items:center}
+.dot-wrap{position:relative;cursor:default}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;cursor:help}
+.d-y{background:#4ade80}.d-n{background:#f87171}.d-p{background:#666}
+.dot-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bk2);border:1px solid var(--b);border-radius:5px;padding:4px 9px;font-size:11px;font-weight:700;white-space:nowrap;color:var(--t);z-index:50;pointer-events:none}
+.dot-wrap:hover .dot-tip{display:block}
+
+/* FILES */
+.fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.fc{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;background:var(--bk3);border:1px solid var(--b);border-radius:6px;font-size:12px;text-decoration:none;color:var(--t);font-weight:600}
+.fc:hover{border-color:var(--yw)}
+.fuz{border:2px dashed var(--b);border-radius:var(--r);padding:13px;text-align:center;cursor:pointer;font-size:13px;color:var(--m);margin-top:8px;font-weight:600}
+.fuz:hover{border-color:var(--yw);background:var(--yw-l)}.fuz input{display:none}
+
+/* NOTES */
+.ni{padding:10px 12px;background:var(--bk3);border-radius:6px;margin-bottom:7px;font-size:13px;border-left:3px solid var(--yw);line-height:1.5}
+.ni-team{border-left-color:#8b5cf6;background:#1e1b2e}
 .ni-notif{border-left-color:var(--bl);background:var(--blb)}
 .ni-comp{border-left-color:var(--no);background:var(--nob)}
-.ni .nm{font-size:10px;color:var(--m);margin-top:4px;font-weight:600}
-.acc-grid{display:grid;grid-template-columns:1fr;gap:0}
-.acc-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--b);flex-wrap:wrap}
+.ni .nm{font-size:11px;color:var(--m);margin-top:4px;font-weight:600}
+
+/* ACC */
+.acc-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--b);flex-wrap:wrap}
 .acc-row:last-child{border:none}
-.acc-lbl{font-size:12px;font-weight:800;min-width:130px}
-.acc-st{font-size:12px;font-weight:700;min-width:110px}
-.a-y{color:var(--ok)}.a-n{color:var(--no)}.a-p{color:#999}
-.acc-note{flex:1;font-size:11px;color:var(--m);min-width:200px}
-.toast{position:fixed;bottom:16px;right:16px;padding:11px 17px;border-radius:var(--r);font-size:13px;z-index:1000;color:#fff;font-weight:700}
-.loading{display:flex;justify-content:center;padding:32px}
-.spinner{width:26px;height:26px;border:3px solid var(--b);border-top-color:var(--yw);border-radius:50%;animation:sp .6s linear infinite}
+.acc-lbl{font-size:13px;font-weight:800;min-width:140px;color:var(--t)}
+.acc-st{font-size:13px;font-weight:700;min-width:130px}
+.a-y{color:#4ade80}.a-n{color:#f87171}.a-p{color:#888}
+.acc-note{flex:1;font-size:12px;color:var(--m);min-width:180px}
+
+/* MISC */
+.pwd-card{background:#2a2700;border:2px solid var(--yw);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.toast{position:fixed;bottom:16px;right:16px;padding:12px 18px;border-radius:var(--r);font-size:14px;z-index:1000;color:#fff;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.loading{display:flex;justify-content:center;padding:36px}
+.spinner{width:28px;height:28px;border:3px solid var(--b);border-top-color:var(--yw);border-radius:50%;animation:sp .6s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.empty{text-align:center;padding:36px;color:var(--m)}
-.pwd-card{background:#3a3200;border:2px solid var(--yw);border-radius:var(--r);padding:18px;margin-bottom:14px}
-@media(max-width:900px){.layout{grid-template-columns:1fr}.logo-col{display:none}.dg,.dg3{grid-template-columns:1fr}.cnt{padding:10px}.otbl{font-size:11px}.otbl th,.otbl td{padding:6px 4px}}
+.empty{text-align:center;padding:36px;color:var(--m);font-size:15px}
+
+@media(max-width:900px){.layout{grid-template-columns:1fr}.logo-col{display:none}.dg,.dg3{grid-template-columns:1fr}.cnt{padding:10px}.otbl{font-size:12px}.otbl th,.otbl td{padding:7px 5px}.fbar input[type=text]{min-width:100%}}
 </style>
 </head>
 <body>
-
 <script>
-/* ============ KONFIGURACJA ============ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu46EyTy2X5XHqwoCkCwl8g0RrDx6miHJFvS3iiTTNk17AzA/exec';
+const API_URL='https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu46EyTy2X5XHqwoCkCwl8g0RrDx6miHJFvS3iiTTNk17AzA/exec';
 </script>
 
 <!-- LOGIN -->
 <div id="loginView" class="login-wrap">
   <div class="login-box">
     <div class="login-logo">
-      <img src="logo.png" style="height:70px;max-width:280px;object-fit:contain" alt="studio55" onerror="this.style.display='none';this.nextElementSibling.style.display=''">
+      <img src="logo.png" style="max-height:70px;max-width:200px;object-fit:contain" alt="studio55" onerror="this.style.display='none';this.nextElementSibling.style.display=''">
       <div style="display:none"><div class="brand">studio55</div><div class="sub">PANEL PRACOWNIKA</div></div>
     </div>
-    <div class="fg"><label>Login</label><input id="inLogin" autocomplete="username" ></div>
-    <div class="fg"><label>Hasło</label><input id="inPass" type="password" autocomplete="current-password" ></div>
-    <button class="btn-login" id="btnLogin" onclick="doLogin()">→ Zaloguj się</button>
+    <div style="margin-bottom:12px"><label class="lbl" id="llLogin">Login</label><input class="inp" id="inLogin" autocomplete="username"></div>
+    <div style="margin-bottom:14px"><label class="lbl" id="llPass">Hasło</label><input class="inp" id="inPass" type="password" autocomplete="current-password"></div>
+    <button class="btn-login" id="btnLogin" onclick="doLogin()">→ <span id="llBtn">Zaloguj się</span></button>
     <div class="login-err" id="loginErr"></div>
+    <div style="text-align:center;margin-top:14px">
+      <button onclick="setLang('pl')" class="lb active" data-l="pl">PL</button>
+      <button onclick="setLang('en')" class="lb" data-l="en">EN</button>
+      <button onclick="setLang('de')" class="lb" data-l="de">DE</button>
+    </div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="appView" style="display:none">
 <div class="hdr">
+  <div><button onclick="setLang('pl')" class="lb active" data-l="pl">PL</button><button onclick="setLang('en')" class="lb" data-l="en">EN</button><button onclick="setLang('de')" class="lb" data-l="de">DE</button></div>
   <span class="role-b" id="roleBadge">pracownik</span>
   <span class="ub" id="userLabel"></span>
-  <button class="btn-logout" onclick="doLogout()">⏻ Wyloguj</button>
+  <button class="btn-logout" onclick="doLogout()" id="bLogout">⏻</button>
 </div>
 <div class="layout">
   <div class="logo-col">
-    <div style="text-align:center">
-      <img src="logo.png" alt="studio55" onerror="this.style.display='none';this.nextElementSibling.style.display=''">
-      <div class="logo-txt" style="display:none">studio55</div>
-    </div>
+    <img src="logo.png" alt="studio55" onerror="this.style.display='none';this.nextElementSibling.style.display=''">
+    <div class="logo-txt" style="display:none">studio55</div>
   </div>
   <div class="cnt">
-  <div id="pwdPrompt" class="pwd-card" style="display:none">
-    <div class="ch">🔑 Ustaw własne hasło</div>
-    <p style="font-size:13px;color:#7a6000;margin-bottom:12px">Administrator ustawił hasło tymczasowe. Zmień je aby kontynuować.</p>
-    <div class="dg3">
-      <div class="fg"><label>Nowe hasło (min. 6)</label><input id="np1" type="password"></div>
-      <div class="fg"><label>Powtórz</label><input id="np2" type="password"></div>
-      <div style="display:flex;align-items:flex-end;padding-bottom:11px"><button class="btn btn-p" onclick="doChangeInitPwd()">Zmień hasło</button></div>
+    <div id="pwdPrompt" class="pwd-card" style="display:none">
+      <div class="ch" id="pwdTitle">Ustaw własne hasło</div>
+      <p style="font-size:13px;color:#ccc;margin-bottom:12px" id="pwdMsg">Administrator ustawił hasło tymczasowe. Zmień je aby kontynuować.</p>
+      <div class="dg3">
+        <div class="fg"><label id="lNp1">Nowe hasło</label><input id="np1" type="password" class="inp" style="background:var(--bk3)!important"></div>
+        <div class="fg"><label id="lNp2">Powtórz</label><input id="np2" type="password" class="inp" style="background:var(--bk3)!important"></div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:12px"><button class="btn btn-p" onclick="doChangeInitPwd()" id="bChPwd">Zmień hasło</button></div>
+      </div>
+    </div>
+    <div id="mainArea">
+      <div id="vList"></div>
+      <div id="vDetail" style="display:none"></div>
     </div>
   </div>
-  <div id="mainArea">
-    <div id="vList"></div>
-    <div id="vDetail" style="display:none"></div>
-  </div>
-</div>
 </div>
 </div>
 
 <script>
+// ============ TRANSLATIONS ============
+const L={
+pl:{
+  llLogin:'Login',llPass:'Hasło',llBtn:'Zaloguj się',
+  noOrders:'Brak zleceń',back:'← Powrót',
+  date:'Data',desc:'Opis',status:'Status',orderNo:'Nr zlecenia',clientNo:'Nr klienta',
+  tracking:'Tracking',guardian:'Opiekun',acc:'Akcept.',client:'Klient',
+  stPend:'Oczekuje',stProg:'W realizacji',stDone:'Zakończone',stCanc:'Anulowane',
+  newOrder:'+ Nowe zlecenie',
+  orderNoLbl:'Nr zlecenia (wewnętrzny)',clientSelect:'Wybierz klienta',
+  descLbl:'Opis',addrLbl:'Adres dostawy',senderLbl:'Nadawca',waybillLbl:'List przewozowy',
+  guardianLbl:'Opiekun',submit:'Utwórz zlecenie',
+  saved:'Zapisano',sent:'Wysłano',uploaded:'Przesłano',error:'Błąd',
+  accTitle:'Akceptacje klienta',viz:'Wizualizacja',cost:'Kosztorys',dateProp:'Termin',
+  yes:'✓ Zaakceptowane',no:'✗ Odrzucone',pend:'⏳ Oczekuje',
+  noFiles:'Brak plików',
+  waybillFile:'List przewozowy — plik',
+  vizSec:'Wizualizacja',costSec:'Kosztorys (PDF)',photoSec:'Zdjęcia z produkcji',
+  invSec:'Faktura',profSec:'Proforma',attSec:'Załączniki klienta',payConfSec:'Potwierdzenia płatności',
+  teamNotes:'Notatki zespołu',teamNotesInfo:'niewidoczne dla klienta',
+  clientNotifs:'Powiadomienia dla klienta',
+  clientMsgs:'Wiadomości od klienta',
+  complaints:'Reklamacje',
+  addTeamNote:'Dodaj notatkę',sendToClient:'↗ Wyślij do klienta',
+  complaint:'Opis reklamacji…',addComplaintFiles:'Dodaj zdjęcia reklamacji',
+  addComplaintBtn:'⚠️ Zgłoś reklamację',
+  noBg:'Brak',
+  termProp:'Proponowany termin',deadlineLbl:'Deadline akceptacji',
+  shipDateLbl:'Data wysyłki',trackingLbl:'Tracking',
+  stageLbl:'Etap',
+  changePwd:'Zmień hasło',oldPwd:'Obecne hasło',newPwdLbl:'Nowe hasło (min. 6)',confirmPwd:'Powtórz',
+  pwdChanged:'Hasło zmienione',pwdMismatch:'Hasła się różnią',pwdShort:'Min. 6 znaków',
+  searchPh:'Szukaj…',filterAll:'— Wszystkie —',noGuardian:'(brak opiekuna)',
+  filterStatus:'— Status —',filterClient:'— Klient —',filterGuardian:'— Opiekun —',
+  refresh:'Odśwież',edit:'Edycja zlecenia',info:'Klient',
+  clickUpload:'Kliknij aby dodać plik',
+},
+en:{
+  llLogin:'Login',llPass:'Password',llBtn:'Sign in',
+  noOrders:'No orders',back:'← Back',
+  date:'Date',desc:'Description',status:'Status',orderNo:'Order no.',clientNo:'Client no.',
+  tracking:'Tracking',guardian:'Account mgr',acc:'Approvals',client:'Client',
+  stPend:'Pending',stProg:'In production',stDone:'Completed',stCanc:'Cancelled',
+  newOrder:'+ New order',
+  orderNoLbl:'Order number (internal)',clientSelect:'Select client',
+  descLbl:'Description',addrLbl:'Delivery address',senderLbl:'Sender',waybillLbl:'Waybill',
+  guardianLbl:'Account manager',submit:'Create order',
+  saved:'Saved',sent:'Sent',uploaded:'Uploaded',error:'Error',
+  accTitle:'Client approvals',viz:'Visualization',cost:'Cost estimate',dateProp:'Date',
+  yes:'✓ Approved',no:'✗ Rejected',pend:'⏳ Pending',
+  noFiles:'No files',
+  waybillFile:'Waybill — file',
+  vizSec:'Visualization',costSec:'Cost estimate (PDF)',photoSec:'Production photos',
+  invSec:'Invoice',profSec:'Proforma',attSec:'Client attachments',payConfSec:'Payment confirmations',
+  teamNotes:'Team notes',teamNotesInfo:'not visible to client',
+  clientNotifs:'Client notifications',
+  clientMsgs:'Messages from client',
+  complaints:'Complaints',
+  addTeamNote:'Add note',sendToClient:'↗ Send to client',
+  complaint:'Complaint description…',addComplaintFiles:'Add complaint photos',
+  addComplaintBtn:'⚠️ Submit complaint',
+  noBg:'None',
+  termProp:'Proposed date',deadlineLbl:'Approval deadline',
+  shipDateLbl:'Ship date',trackingLbl:'Tracking',
+  stageLbl:'Stage',
+  changePwd:'Change password',oldPwd:'Current password',newPwdLbl:'New password (min. 6)',confirmPwd:'Confirm',
+  pwdChanged:'Password changed',pwdMismatch:'Passwords do not match',pwdShort:'Min. 6 characters',
+  searchPh:'Search…',filterAll:'— All —',noGuardian:'(no manager)',
+  filterStatus:'— Status —',filterClient:'— Client —',filterGuardian:'— Manager —',
+  refresh:'Refresh',edit:'Edit order',info:'Client',
+  clickUpload:'Click to add file',
+},
+de:{
+  llLogin:'Login',llPass:'Passwort',llBtn:'Anmelden',
+  noOrders:'Keine Aufträge',back:'← Zurück',
+  date:'Datum',desc:'Beschreibung',status:'Status',orderNo:'Auftrags-Nr.',clientNo:'Kunden-Nr.',
+  tracking:'Tracking',guardian:'Betreuer',acc:'Freigaben',client:'Kunde',
+  stPend:'Ausstehend',stProg:'In Produktion',stDone:'Abgeschlossen',stCanc:'Storniert',
+  newOrder:'+ Neuer Auftrag',
+  orderNoLbl:'Auftragsnummer (intern)',clientSelect:'Kunde auswählen',
+  descLbl:'Beschreibung',addrLbl:'Lieferadresse',senderLbl:'Absender',waybillLbl:'Frachtbrief',
+  guardianLbl:'Betreuer',submit:'Auftrag erstellen',
+  saved:'Gespeichert',sent:'Gesendet',uploaded:'Hochgeladen',error:'Fehler',
+  accTitle:'Kundenfreigaben',viz:'Visualisierung',cost:'Kostenvoranschlag',dateProp:'Termin',
+  yes:'✓ Genehmigt',no:'✗ Abgelehnt',pend:'⏳ Ausstehend',
+  noFiles:'Keine Dateien',
+  waybillFile:'Frachtbrief — Datei',
+  vizSec:'Visualisierung',costSec:'Kostenvoranschlag (PDF)',photoSec:'Produktionsfotos',
+  invSec:'Rechnung',profSec:'Proforma',attSec:'Kundenanhänge',payConfSec:'Zahlungsbestätigungen',
+  teamNotes:'Teamnotizen',teamNotesInfo:'für Kunden unsichtbar',
+  clientNotifs:'Kundenbenachrichtigungen',
+  clientMsgs:'Nachrichten vom Kunden',
+  complaints:'Reklamationen',
+  addTeamNote:'Notiz hinzufügen',sendToClient:'↗ An Kunden senden',
+  complaint:'Reklamationsbeschreibung…',addComplaintFiles:'Fotos hinzufügen',
+  addComplaintBtn:'⚠️ Reklamation einreichen',
+  noBg:'Keine',
+  termProp:'Vorgeschlagener Termin',deadlineLbl:'Freigabe-Deadline',
+  shipDateLbl:'Versanddatum',trackingLbl:'Tracking',
+  stageLbl:'Phase',
+  changePwd:'Passwort ändern',oldPwd:'Aktuelles Passwort',newPwdLbl:'Neues Passwort (min. 6)',confirmPwd:'Bestätigen',
+  pwdChanged:'Passwort geändert',pwdMismatch:'Passwörter stimmen nicht überein',pwdShort:'Min. 6 Zeichen',
+  searchPh:'Suchen…',filterAll:'— Alle —',noGuardian:'(kein Betreuer)',
+  filterStatus:'— Status —',filterClient:'— Kunde —',filterGuardian:'— Betreuer —',
+  refresh:'Aktualisieren',edit:'Auftrag bearbeiten',info:'Kunde',
+  clickUpload:'Datei hinzufügen',
+}};
+function t(k){return(L[cl]&&L[cl][k])||L.pl[k]||k}
+
+// ============ STATE ============
 let session=localStorage.getItem('s55w_sess')||'';
-let userName='',userRole='',workers=[];
+let userName='',userRole='',workers=[],clients=[];
 let allOrders=[],sortCol='dateCreated',sortDir='desc';
 let ordersLoaded=false;
 let curId=null,curOrder=null;
+let cl=localStorage.getItem('s55_lang')||'pl';
+let wCompFiles=[];
 
+function setLang(l){
+  cl=l;localStorage.setItem('s55_lang',l);
+  document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active',b.dataset.l===l));
+  applyLang();
+}
+function applyLang(){
+  ['llLogin','llPass','llBtn'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=t(id)});
+  const bl=document.getElementById('bLogout');if(bl)bl.title=t('logout')||'';
+}
+
+// ============ UTILS ============
 function esc(s){if(s==null)return'';const d=document.createElement('div');d.textContent=String(s);return d.innerHTML}
-function fmtD(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString('pl-PL',{year:'numeric',month:'2-digit',day:'2-digit'})}catch(e){return d}}
-function fmtDT(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleString('pl-PL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){return d}}
+function fmtD(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleDateString(cl==='de'?'de-DE':cl==='en'?'en-GB':'pl-PL',{year:'numeric',month:'2-digit',day:'2-digit'})}catch(e){return d}}
+function fmtDT(d){if(!d)return'—';try{const dt=new Date(d);if(isNaN(dt))return d;return dt.toLocaleString(cl==='de'?'de-DE':cl==='en'?'en-GB':'pl-PL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}catch(e){return d}}
 function toast(m,type){const e=document.createElement('div');e.className='toast';e.style.background=type==='error'?'var(--no)':'var(--ok)';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3200)}
 
+// ============ API ============
 function api(data){
   data.session=session;
   return new Promise((res,rej)=>{
@@ -181,7 +336,7 @@ async function apiPost(data){
   return j;
 }
 
-/* ============ LOGIN ============ */
+// ============ LOGIN ============
 async function doLogin(){
   const login=document.getElementById('inLogin').value.trim();
   const pass=document.getElementById('inPass').value;
@@ -205,13 +360,14 @@ async function doLogin(){
     if(r.role!=='worker'&&r.role!=='admin')throw new Error('Ten panel jest dla pracowników');
     session=r.session;userName=r.name;userRole=r.role;
     localStorage.setItem('s55w_sess',session);
-    // Login zwraca już listę zleceń i pracowników — pomijamy osobne zapytania
     if(r.orders){allOrders=r.orders;ordersLoaded=true}
-    if(r.workers){workers=r.workers}
+    if(r.workers)workers=r.workers;
+    if(r.clients)clients=r.clients;
     showApp(r.mustChangePassword);
   }catch(e){err.textContent=e.message}
   finally{btn.disabled=false}
 }
+
 function doLogout(){
   if(session)api({action:'logout'}).catch(()=>{});
   session='';localStorage.removeItem('s55w_sess');
@@ -220,11 +376,14 @@ function doLogout(){
   document.getElementById('inPass').value='';
   document.getElementById('loginErr').textContent='';
 }
+
 async function showApp(mustChange){
   document.getElementById('loginView').style.display='none';
   document.getElementById('appView').style.display='';
   document.getElementById('userLabel').textContent=userName;
-  document.getElementById('roleBadge').textContent=userRole==='admin'?'admin':'pracownik';
+  document.getElementById('roleBadge').textContent=userRole==='admin'?'admin':t('stPend').replace('Oczekuje','').trim()||'pracownik';
+  document.getElementById('roleBadge').textContent=userRole==='admin'?'ADMIN':'PRACOWNIK';
+  document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active',b.dataset.l===cl));
   if(mustChange){
     document.getElementById('pwdPrompt').style.display='';
     document.getElementById('mainArea').style.display='none';
@@ -232,69 +391,77 @@ async function showApp(mustChange){
   }
   document.getElementById('pwdPrompt').style.display='none';
   document.getElementById('mainArea').style.display='';
-  if(!workers.length){ try{const wr=await api({action:'listWorkers'});workers=wr.workers||[]}catch(e){} }
+  if(!workers.length||!clients.length){
+    try{
+      const[wr,cr]=await Promise.all([api({action:'listWorkers'}),api({action:'listClients'})]);
+      workers=wr.workers||[];clients=cr.clients||[];
+    }catch(e){}
+  }
   loadOrders();
 }
+
 async function doChangeInitPwd(){
   const p1=document.getElementById('np1').value,p2=document.getElementById('np2').value;
-  if(p1!==p2){toast('Hasła się różnią','error');return}
-  if(p1.length<6){toast('Min. 6 znaków','error');return}
+  if(p1!==p2){toast(t('pwdMismatch'),'error');return}
+  if(p1.length<6){toast(t('pwdShort'),'error');return}
   try{
     const r=await api({action:'changePassword',newPassword:p1});
     if(r.error)throw new Error(r.error);
-    toast('Hasło zmienione');
+    toast(t('pwdChanged'));
     document.getElementById('pwdPrompt').style.display='none';
     document.getElementById('mainArea').style.display='';
-    const wr=await api({action:'listWorkers'});workers=wr.workers||[];
+    const[wr,cr]=await Promise.all([api({action:'listWorkers'}),api({action:'listClients'})]);
+    workers=wr.workers||[];clients=cr.clients||[];
     loadOrders();
   }catch(e){toast(e.message,'error')}
 }
 
-/* ============ LIST ============ */
+// ============ LIST ============
 async function loadOrders(force){
   const el=document.getElementById('vList');
   document.getElementById('vDetail').style.display='none';
   el.style.display='';
-  if(ordersLoaded && !force){
-    ordersLoaded=false;
-    renderTable();
-    return;
-  }
+  if(ordersLoaded&&!force){ordersLoaded=false;renderTable();return}
   el.innerHTML='<div class="loading"><div class="spinner"></div></div>';
   try{
     const r=await api({action:'getOrders'});
     if(r.error)throw new Error(r.error);
     allOrders=r.orders||[];
     renderTable();
-  }catch(e){el.innerHTML='<div class="card" style="color:var(--no);padding:20px">'+esc(e.message)+'</div>'}
+  }catch(e){el.innerHTML='<div class="card" style="color:var(--no);padding:20px;font-size:14px">'+esc(e.message)+'</div>'}
 }
 
 const COLS=[
-  {k:'dateCreated',  l:'Data',        w:'82px'},
-  {k:'clientId',     l:'Klient',      w:'110px'},
-  {k:'description',  l:'Opis',        w:''},
-  {k:'status',       l:'Status',      w:'100px'},
-  {k:'orderNo',      l:'Nr zlec.',    w:'88px'},
-  {k:'clientOrderNo',l:'Nr klienta',  w:'88px'},
-  {k:'tracking',     l:'Tracking',    w:'88px'},
-  {k:'guardian',     l:'Opiekun',     w:'96px'},
-  {k:'_acc',         l:'Akcept.',     w:'72px'},
+  {k:'dateCreated',l:()=>t('date'),w:'86px'},
+  {k:'clientId',l:()=>t('client'),w:'100px'},
+  {k:'clientOrderNo',l:()=>t('clientNo'),w:'90px'},
+  {k:'description',l:()=>t('desc'),w:''},
+  {k:'status',l:()=>t('status'),w:'102px'},
+  {k:'orderNo',l:()=>t('orderNo'),w:'90px'},
+  {k:'tracking',l:()=>t('tracking'),w:'90px'},
+  {k:'guardian',l:()=>t('guardian'),w:'96px'},
+  {k:'_acc',l:()=>t('acc'),w:'76px'},
 ];
 
 function renderTable(){
   const el=document.getElementById('vList');
-  const clients=[...new Set(allOrders.map(o=>o.clientId).filter(Boolean))].sort();
-  let h='<div class="fbar">';
-  h+='<input type="text" id="fS" placeholder="🔍 Szukaj (opis, nr, tracking, klient)…" oninput="filterTable()">';
-  h+='<select id="fSt" onchange="filterTable()"><option value="">— Status —</option><option value="PENDING">Oczekuje</option><option value="IN_PROGRESS">W realizacji</option><option value="DONE">Zakończone</option><option value="CANCELLED">Anulowane</option></select>';
-  h+='<select id="fC" onchange="filterTable()"><option value="">— Klient —</option>'+clients.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select>';
-  h+='<select id="fG" onchange="filterTable()"><option value="">— Opiekun —</option><option value="__none">(brak opiekuna)</option>'+workers.map(w=>'<option value="'+esc(w.login)+'">'+esc(w.name||w.login)+'</option>').join('')+'</select>';
-  h+='<button class="btn btn-o btn-sm" onclick="loadOrders(true)" title="Odśwież">↻</button>';
+  const clientList=[...new Set(allOrders.map(o=>o.clientId).filter(Boolean))].sort();
+
+  let h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
+  h+='<div class="fbar" style="margin:0;flex:1">';
+  h+='<input type="text" id="fS" placeholder="🔍 '+t('searchPh')+'" oninput="filterTable()">';
+  h+='<select id="fSt" onchange="filterTable()"><option value="">'+t('filterStatus')+'</option><option value="PENDING">'+t('stPend')+'</option><option value="IN_PROGRESS">'+t('stProg')+'</option><option value="DONE">'+t('stDone')+'</option><option value="CANCELLED">'+t('stCanc')+'</option></select>';
+  h+='<select id="fC" onchange="filterTable()"><option value="">'+t('filterClient')+'</option>'+clientList.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join('')+'</select>';
+  h+='<select id="fG" onchange="filterTable()"><option value="">'+t('filterGuardian')+'</option><option value="__none">'+t('noGuardian')+'</option>'+workers.map(w=>'<option value="'+esc(w.login)+'">'+esc(w.name||w.login)+'</option>').join('')+'</select>';
+  h+='<button class="btn btn-o btn-sm" onclick="loadOrders(true)" title="'+t('refresh')+'">↻</button>';
   h+='</div>';
+  h+='<button class="btn btn-p btn-sm" style="margin-left:10px;white-space:nowrap" onclick="showNewOrderForm()">'+t('newOrder')+'</button>';
+  h+='</div>';
+  h+='<div id="newOrderArea"></div>';
   h+='<div class="card" style="padding:0;overflow-x:auto"><table class="otbl"><thead><tr>';
   COLS.forEach(c=>{
     const s=sortCol===c.k;
-    h+='<th class="'+(s?'sorted':'')+'" onclick="sortBy(\''+c.k+'\')"'+(c.w?' style="width:'+c.w+'"':'')+'>'+c.l+'<span class="arr">'+(s?(sortDir==='asc'?'▲':'▼'):'⇅')+'</span></th>';
+    h+='<th class="'+(s?'sorted':'')+'" onclick="sortBy(\''+c.k+'\')"'+(c.w?' style="width:'+c.w+'"':'')+'>'+c.l()+'<span class="arr">'+(s?(sortDir==='asc'?'▲':'▼'):'⇅')+'</span></th>';
   });
   h+='<th style="width:22px"></th></tr></thead><tbody id="tRows"></tbody></table></div>';
   el.innerHTML=h;
@@ -302,148 +469,213 @@ function renderTable(){
 }
 
 function statusBadge(s){
-  const m={PENDING:['st-pend','Oczekuje'],IN_PROGRESS:['st-prog','W realizacji'],DONE:['st-done','Zakończone'],CANCELLED:['st-canc','Anulowane']};
+  const m={PENDING:['st-pend',t('stPend')],IN_PROGRESS:['st-prog',t('stProg')],DONE:['st-done',t('stDone')],CANCELLED:['st-canc',t('stCanc')]};
   const x=m[s]||['st-pend',s||'—'];
   return '<span class="st '+x[0]+'">'+x[1]+'</span>';
 }
-function dot(s){return '<span class="dot '+(s==='YES'?'d-y':s==='NO'?'d-n':'d-p')+'"></span>'}
+
+function dot(s,label){
+  const cls=s==='YES'?'d-y':s==='NO'?'d-n':'d-p';
+  return '<span class="dot-wrap"><span class="dot '+cls+'"></span><span class="dot-tip">'+esc(label)+': '+(s==='YES'?t('yes'):s==='NO'?t('no'):t('pend'))+'</span></span>';
+}
 
 function filterTable(){
   const q=(document.getElementById('fS').value||'').toLowerCase();
-  const fSt=document.getElementById('fSt').value;
-  const fC=document.getElementById('fC').value;
-  const fG=document.getElementById('fG').value;
+  const fSt=(document.getElementById('fSt')||{}).value||'';
+  const fC=(document.getElementById('fC')||{}).value||'';
+  const fG=(document.getElementById('fG')||{}).value||'';
 
   let items=allOrders.filter(o=>{
     if(fSt&&o.status!==fSt)return false;
     if(fC&&o.clientId!==fC)return false;
-    if(fG){ if(fG==='__none'){ if(o.guardian) return false } else if(o.guardian!==fG) return false }
+    if(fG){if(fG==='__none'){if(o.guardian)return false}else if(o.guardian!==fG)return false}
     if(q){
       const hay=[o.description,o.orderNo,o.clientOrderNo,o.tracking,o.clientId,o.guardian,o.id].join(' ').toLowerCase();
       if(!hay.includes(q))return false;
     }
     return true;
   });
-  items.sort((a,b)=>{let va=sortVal(a,sortCol),vb=sortVal(b,sortCol);if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0});
+  items.sort((a,b)=>{let va=sv(a,sortCol),vb=sv(b,sortCol);if(va<vb)return sortDir==='asc'?-1:1;if(va>vb)return sortDir==='asc'?1:-1;return 0});
 
+  const tb=document.getElementById('tRows');
   let h='';
   items.forEach(o=>{
     h+='<tr class="dr" onclick="openOrder(\''+o.id+'\')">';
-    h+='<td class="nowrap" style="color:var(--m);font-size:11px">'+fmtD(o.dateCreated)+'</td>';
-    h+='<td style="font-size:12px;font-weight:600">'+esc(o.clientId||'—')+'</td>';
+    h+='<td class="nowrap" style="color:var(--m);font-size:12px">'+fmtD(o.dateCreated)+'</td>';
+    h+='<td style="font-size:12px;font-weight:700">'+esc(o.clientId||'—')+'</td>';
+    h+='<td style="font-size:12px">'+esc(o.clientOrderNo||'—')+'</td>';
     h+='<td style="font-weight:600">'+esc((o.description||'').substring(0,46))+((o.description||'').length>46?'…':'')+'</td>';
     h+='<td>'+statusBadge(o.status)+'</td>';
     h+='<td style="font-size:12px">'+esc(o.orderNo||'—')+'</td>';
-    h+='<td style="font-size:12px">'+esc(o.clientOrderNo||'—')+'</td>';
     h+='<td style="font-size:12px">'+esc(o.tracking||'—')+'</td>';
     h+='<td style="font-size:12px;font-weight:600">'+esc(o.guardian||'—')+'</td>';
-    h+='<td>'+(o.status==='PENDING'?'<span class="dots" title="Wiz / Koszt / Termin">'+dot(o.vizStatus)+dot(o.costStatus)+dot(o.dateStatus)+'</span>':'<span style="color:#ccc">—</span>')+'</td>';
-    h+='<td style="color:#bbb;text-align:right">›</td></tr>';
+    h+='<td>'+( o.status==='PENDING'
+      ?'<div class="dots">'+dot(o.vizStatus,t('viz'))+dot(o.costStatus,t('cost'))+dot(o.dateStatus,t('dateProp'))+'</div>'
+      :'<span style="color:#555">—</span>'
+    )+'</td>';
+    h+='<td style="color:#555;text-align:right">›</td></tr>';
   });
-  if(!items.length)h='<tr><td colspan="10" class="empty">Brak zleceń</td></tr>';
-  document.getElementById('tRows').innerHTML=h;
+  if(!items.length)h='<tr><td colspan="10" class="empty">'+t('noOrders')+'</td></tr>';
+  tb.innerHTML=h;
 }
 
-function sortVal(o,c){
+function sv(o,c){
   switch(c){
-    case'dateCreated':   return o.dateCreated||'';
-    case'clientId':      return (o.clientId||'').toLowerCase();
-    case'description':   return (o.description||'').toLowerCase();
-    case'status':        return o.status||'';
-    case'orderNo':       return (o.orderNo||'').toLowerCase();
-    case'clientOrderNo': return (o.clientOrderNo||'').toLowerCase();
-    case'tracking':      return (o.tracking||'').toLowerCase();
-    case'guardian':      return (o.guardian||'').toLowerCase();
-    case'_acc':          return (o.vizStatus||'')+(o.costStatus||'')+(o.dateStatus||'');
-    default: return '';
+    case'dateCreated':return o.dateCreated||'';
+    case'clientId':return(o.clientId||'').toLowerCase();
+    case'clientOrderNo':return(o.clientOrderNo||'').toLowerCase();
+    case'description':return(o.description||'').toLowerCase();
+    case'status':return o.status||'';
+    case'orderNo':return(o.orderNo||'').toLowerCase();
+    case'tracking':return(o.tracking||'').toLowerCase();
+    case'guardian':return(o.guardian||'').toLowerCase();
+    case'_acc':return(o.vizStatus||'P')+(o.costStatus||'P')+(o.dateStatus||'P');
+    default:return'';
   }
 }
 function sortBy(c){if(sortCol===c)sortDir=sortDir==='asc'?'desc':'asc';else{sortCol=c;sortDir='asc'}renderTable()}
 
-/* ============ DETAIL ============ */
+// ============ NEW ORDER FORM ============
+function showNewOrderForm(){
+  const wOpts=workers.map(w=>'<option value="'+esc(w.login)+'" '+(w.login===userName?'selected':'')+'>'+esc(w.name||w.login)+'</option>').join('');
+  const cOpts=clients.map(c=>'<option value="'+esc(c.login)+'">'+esc((c.name||c.login)+(c.company&&c.company!==c.name?' ('+c.company+')':''))+'</option>').join('');
+  const a=document.getElementById('newOrderArea');
+  a.innerHTML=`<div class="card" style="border:2px solid var(--yw)">
+    <div class="ch">${t('newOrder')} <button class="btn btn-o btn-sm" onclick="document.getElementById('newOrderArea').innerHTML=''">✕</button></div>
+    <div class="dg3">
+      <div class="fg"><label>${t('clientSelect')} *</label><select id="nClient"><option value="">${t('clientSelect')}</option>${cOpts}</select></div>
+      <div class="fg"><label>${t('orderNoLbl')}</label><input id="nOrderNo"></div>
+      <div class="fg"><label>${t('clientNo')}</label><input id="nClientNo"></div>
+    </div>
+    <div class="fg"><label>${t('descLbl')} *</label><textarea id="nDesc" rows="2"></textarea></div>
+    <div class="dg">
+      <div class="fg"><label>${t('addrLbl')}</label><input id="nAddr"></div>
+      <div class="fg"><label>${t('guardianLbl')}</label><select id="nGuardian"><option value="">${t('noBg')}</option>${wOpts}</select></div>
+    </div>
+    <div class="dg">
+      <div class="fg"><label>${t('senderLbl')}</label><input id="nSender"></div>
+      <div class="fg"><label>${t('waybillLbl')}</label><input id="nWaybill"></div>
+    </div>
+    <button class="btn btn-p" onclick="submitNewOrder()" id="bSubmit">✓ ${t('submit')}</button>
+  </div>`;
+}
+
+async function submitNewOrder(){
+  const clientId=document.getElementById('nClient').value;
+  const desc=document.getElementById('nDesc').value.trim();
+  if(!clientId){toast(t('clientSelect'),'error');return}
+  if(!desc){toast(t('descLbl'),'error');return}
+  const btn=document.getElementById('bSubmit');btn.disabled=true;
+  try{
+    const r=await api({action:'createOrder',order:{
+      clientId,
+      orderNo:document.getElementById('nOrderNo').value.trim(),
+      clientOrderNo:document.getElementById('nClientNo').value.trim(),
+      description:desc,
+      deliveryAddr:document.getElementById('nAddr').value.trim(),
+      sender:document.getElementById('nSender').value.trim(),
+      waybill:document.getElementById('nWaybill').value.trim(),
+      guardian:document.getElementById('nGuardian').value,
+    }});
+    if(r.error)throw new Error(r.error);
+    toast(t('saved'));
+    document.getElementById('newOrderArea').innerHTML='';
+    loadOrders(true);
+  }catch(e){toast(e.message,'error')}
+  finally{btn.disabled=false}
+}
+
+// ============ ORDER DETAIL ============
 async function openOrder(id){
   curId=id;
   document.getElementById('vList').style.display='none';
   const el=document.getElementById('vDetail');
   el.style.display='';
-  el.innerHTML='<button class="btn btn-o btn-sm" onclick="backToList()" style="margin-bottom:10px">← Powrót</button><div class="loading"><div class="spinner"></div></div>';
+  el.innerHTML='<button class="btn btn-o btn-sm" onclick="backToList()" style="margin-bottom:10px">'+t('back')+'</button><div class="loading"><div class="spinner"></div></div>';
   try{
     const r=await api({action:'getOrder',orderId:id});
     if(r.error)throw new Error(r.error);
-    curOrder=r.order;
-    renderDetail(r.order);
-  }catch(e){el.innerHTML='<button class="btn btn-o btn-sm" onclick="backToList()">← Powrót</button><div class="card" style="margin-top:10px;color:var(--no)">'+esc(e.message)+'</div>'}
+    curOrder=r.order;renderDetail(r.order);
+  }catch(e){el.innerHTML='<button class="btn btn-o btn-sm" onclick="backToList()">'+t('back')+'</button><div class="card" style="margin-top:10px;color:var(--no)">'+esc(e.message)+'</div>'}
 }
+
 function backToList(){document.getElementById('vDetail').style.display='none';document.getElementById('vList').style.display='';loadOrders(true)}
 
 function renderDetail(o){
   const el=document.getElementById('vDetail');
-  const isPending=o.status==='PENDING';
   const wOpts=workers.map(w=>'<option value="'+esc(w.login)+'"'+(o.guardian===w.login?' selected':'')+'>'+esc(w.name||w.login)+'</option>').join('');
 
-  let h='<button class="btn btn-o btn-sm" onclick="backToList()" style="margin-bottom:10px">← Powrót do listy</button>';
+  let h='<button class="btn btn-o btn-sm" onclick="backToList()" style="margin-bottom:10px">'+t('back')+'</button>';
 
-  // === EDIT CARD ===
-  h+='<div class="card"><div class="ch"><span>✏️ Edycja zlecenia</span><span style="font-size:11px;font-weight:400;color:var(--m);text-transform:none">ID: '+esc(o.id)+' · Klient: <strong>'+esc(o.clientId)+'</strong></span></div>';
+  // EDIT
+  h+='<div class="card"><div class="ch">✏️ '+t('edit')+'<span style="font-size:11px;font-weight:400;color:var(--m)">ID: '+esc(o.id)+' · '+t('client')+': <strong>'+esc(o.clientId)+'</strong></span></div>';
   h+='<div class="dg3">';
-  h+='<div class="fg"><label>Nr zlecenia (wewnętrzny)</label><input id="eOrderNo" value="'+esc(o.orderNo||'')+'"></div>';
-  h+='<div class="fg"><label>Status</label><select id="eStatus">'
-    +'<option value="PENDING"'+(o.status==='PENDING'?' selected':'')+'>Oczekuje (akceptacje)</option>'
-    +'<option value="IN_PROGRESS"'+(o.status==='IN_PROGRESS'?' selected':'')+'>W realizacji</option>'
-    +'<option value="DONE"'+(o.status==='DONE'?' selected':'')+'>Zakończone</option>'
-    +'<option value="CANCELLED"'+(o.status==='CANCELLED'?' selected':'')+'>Anulowane</option></select></div>';
-  h+='<div class="fg"><label>Opiekun</label><select id="eGuardian"><option value="">— brak —</option>'+wOpts+'</select></div>';
+  h+='<div class="fg"><label>'+t('orderNoLbl')+'</label><input id="eOrderNo" value="'+esc(o.orderNo||'')+'"></div>';
+  h+='<div class="fg"><label>'+t('status')+'</label><select id="eStatus">'
+    +'<option value="PENDING"'+(o.status==='PENDING'?' selected':'')+'>'+t('stPend')+'</option>'
+    +'<option value="IN_PROGRESS"'+(o.status==='IN_PROGRESS'?' selected':'')+'>'+t('stProg')+'</option>'
+    +'<option value="DONE"'+(o.status==='DONE'?' selected':'')+'>'+t('stDone')+'</option>'
+    +'<option value="CANCELLED"'+(o.status==='CANCELLED'?' selected':'')+'>'+t('stCanc')+'</option></select></div>';
+  h+='<div class="fg"><label>'+t('guardianLbl')+'</label><select id="eGuardian"><option value="">'+t('noBg')+'</option>'+wOpts+'</select></div>';
   h+='</div><div class="dg3">';
-  h+='<div class="fg"><label>Proponowany termin</label><input id="eDateProp" value="'+esc(o.dateProposed||'')+'" placeholder="np. 15.03.2025"></div>';
-  h+='<div class="fg"><label>Deadline akceptacji</label><input id="eDateDl" value="'+esc(o.dateDeadline||'')+'" placeholder="np. 10.03.2025"></div>';
-  h+='<div class="fg"><label>Data wysyłki</label><input type="date" id="eShipDate" value="'+esc(o.shipDate||'')+'"></div>';
+  h+='<div class="fg"><label>'+t('termProp')+'</label><input id="eDateProp" value="'+esc(o.dateProposed||'')+'"></div>';
+  h+='<div class="fg"><label>'+t('deadlineLbl')+'</label><input id="eDateDl" value="'+esc(o.dateDeadline||'')+'"></div>';
+  h+='<div class="fg"><label>'+t('shipDateLbl')+'</label><input type="date" id="eShipDate" value="'+esc(o.shipDate||'')+'"></div>';
   h+='</div><div class="dg3">';
-  h+='<div class="fg"><label>Tracking</label><input id="eTracking" value="'+esc(o.tracking||'')+'"></div>';
-  h+='<div class="fg"><label>List przewozowy — plik</label>'+(o.trackingFile&&o.trackingFile.length?'<div class="fl" style="margin-bottom:6px">'+o.trackingFile.map(x=>'<a class="fc" href="'+esc(x.viewUrl||x.url||'#')+'" target="_blank">📎 '+esc(x.name||'Plik')+'</a>').join('')+'</div>':'')+'<div class="fuz" onclick="document.getElementById(\'uTrack\').click()">📎 Kliknij aby dodać plik<input type="file" id="uTrack" multiple onchange="handleUp(this,\'trackingFile\')"></div></div>';
-  h+='<div class="fg"><label>List przewozowy</label><input id="eWaybill" value="'+esc(o.waybill||'')+'"></div>';
-  h+='<div class="fg"><label>Nadawca (dostawa neutralna)</label><input id="eSender" value="'+esc(o.sender||'')+'"></div>';
+  h+='<div class="fg"><label>'+t('trackingLbl')+'</label><input id="eTracking" value="'+esc(o.tracking||'')+'"></div>';
+  h+='<div class="fg"><label>'+t('waybillLbl')+'</label><input id="eWaybill" value="'+esc(o.waybill||'')+'"></div>';
+  h+='<div class="fg"><label>'+t('senderLbl')+'</label><input id="eSender" value="'+esc(o.sender||'')+'"></div>';
   h+='</div>';
-  h+='<div class="fg"><label>Adres dostawy</label><input id="eAddr" value="'+esc(o.deliveryAddr||'')+'"></div>';
-  h+='<div style="background:var(--bg);padding:9px 11px;border-radius:6px;font-size:12px;margin-bottom:11px"><strong>Opis:</strong> '+esc(o.description||'—')+'<br><strong>Nr klienta:</strong> '+esc(o.clientOrderNo||'—')+' · <strong>Utworzono:</strong> '+fmtDT(o.dateCreated)+'</div>';
-  h+='<button class="btn btn-p" onclick="saveOrder()">💾 Zapisz zmiany</button></div>';
+  h+='<div class="fg"><label>'+t('addrLbl')+'</label><input id="eAddr" value="'+esc(o.deliveryAddr||'')+'"></div>';
+  h+='<div style="background:var(--bk3);padding:10px 12px;border-radius:6px;font-size:13px;margin-bottom:12px;line-height:1.7"><strong>'+t('clientNo')+':</strong> '+esc(o.clientOrderNo||'—')+' &nbsp;|&nbsp; <strong>'+t('desc')+':</strong> '+esc(o.description||'—')+'<br><strong>'+t('date')+':</strong> '+fmtDT(o.dateCreated)+'</div>';
+  h+='<button class="btn btn-p" onclick="saveOrder()">💾 '+t('saved')+'</button></div>';
 
-  // === ACCEPTANCE STATUS ===
-  if(isPending){
-    h+='<div class="card"><div class="ch">✓ Akceptacje klienta</div><div class="acc-grid">';
-    h+=accRow('🎨 Wizualizacja',o.vizStatus,o.vizNotes, o.vizFiles&&o.vizFiles.length?null:'Brak plików — klient nie widzi jeszcze przycisków');
-    h+=accRow('💰 Kosztorys',o.costStatus,o.costNotes, o.costFile?null:'Brak pliku — klient nie widzi jeszcze przycisków');
-    h+=accRow('📅 Termin',o.dateStatus,o.dateNotes, o.dateProposed?null:'Brak terminu — klient nie widzi jeszcze przycisków');
+  // ACCEPTANCES
+  if(o.status==='PENDING'){
+    h+='<div class="card"><div class="ch">✓ '+t('accTitle')+'</div><div>';
+    h+=accRow(t('viz'),o.vizStatus,o.vizNotes,o.vizFiles&&o.vizFiles.length?null:'⚠ '+t('noFiles'));
+    h+=accRow(t('cost'),o.costStatus,o.costNotes,o.costFile?null:'⚠ '+t('noFiles'));
+    h+=accRow(t('dateProp'),o.dateStatus,o.dateNotes,o.dateProposed?null:'⚠ '+t('noBg'));
     h+='</div></div>';
   }
 
-  // === FILES (worker uploads) ===
-  h+=upSec('🎨 Wizualizacja','vizFiles',o.vizFiles);
-  h+=upSec('💰 Kosztorys (PDF)','costFile',o.costFile?[o.costFile]:[]);
-  h+=upSec('📸 Zdjęcia z produkcji','prodPhotos',o.prodPhotos);
-  h+=upSec('🧾 Faktura','invoiceFile',o.invoiceFile?[o.invoiceFile]:[]);
-  h+=upSec('📄 Proforma','proformaFile',o.proformaFile?[o.proformaFile]:[]);
+  // WAYBILL FILE
+  h+='<div class="card"><div class="ch">📄 '+t('waybillFile')+'</div>'
+    +fileList(o.trackingFile)
+    +upBox('trackingFile')+'</div>';
 
-  // === CLIENT FILES (read-only) ===
-  h+='<div class="card"><div class="ch">📎 Załączniki klienta</div>'+fileList(o.attachments)+'</div>';
-  h+='<div class="card"><div class="ch">💳 Potwierdzenia płatności</div>'+fileList(o.paymentConf)+'</div>';
+  // FILES
+  h+=upSec('🎨 '+t('vizSec'),'vizFiles',o.vizFiles);
+  h+=upSec('💰 '+t('costSec'),'costFile',o.costFile?[o.costFile]:[]);
+  h+=upSec('📸 '+t('photoSec'),'prodPhotos',o.prodPhotos);
+  h+=upSec('🧾 '+t('invSec'),'invoiceFile',o.invoiceFile?[o.invoiceFile]:[]);
+  h+=upSec('📄 '+t('profSec'),'proformaFile',o.proformaFile?[o.proformaFile]:[]);
 
-  // === NOTES ===
-  h+='<div class="card"><div class="ch"><span>🔒 Notatki zespołu</span><span style="font-size:10px;font-weight:400;color:var(--m);text-transform:none">niewidoczne dla klienta</span></div>'
-    +noteList(o.teamNotes,'ni-team')
-    +'<div style="margin-top:9px"><div class="fg"><textarea id="tNote" rows="2" placeholder="Notatka wewnętrzna…"></textarea></div>'
-    +'<button class="btn btn-o btn-sm" onclick="addNote(\'team\')">+ Dodaj notatkę</button></div></div>';
+  // CLIENT FILES (read-only)
+  h+='<div class="card"><div class="ch">📎 '+t('attSec')+'</div>'+fileList(o.attachments)+'</div>';
+  h+='<div class="card"><div class="ch">💳 '+t('payConfSec')+'</div>'+fileList(o.paymentConf)+'</div>';
 
-  h+='<div class="card"><div class="ch">📢 Powiadomienia dla klienta</div>'
-    +noteList(o.clientNotifs,'ni-notif')
-    +'<div style="margin-top:9px"><div class="fg"><textarea id="cNote" rows="2" placeholder="Wiadomość widoczna dla klienta…"></textarea></div>'
-    +'<button class="btn btn-p btn-sm" onclick="addNote(\'client\')">↗ Wyślij do klienta</button></div></div>';
+  // TEAM NOTES
+  h+='<div class="card"><div class="ch">🔒 '+t('teamNotes')+' <span style="font-size:10px;font-weight:400;color:var(--m);text-transform:none">'+t('teamNotesInfo')+'</span></div>'
+    +noteList(o.teamNotes||[],'ni-team')
+    +'<div style="margin-top:10px"><div class="fg"><textarea id="tNote" rows="2" placeholder="'+t('addTeamNote')+'…"></textarea></div>'
+    +'<button class="btn btn-o btn-sm" onclick="addNote(\'team\')">+ '+t('addTeamNote')+'</button></div></div>';
 
-  h+='<div class="card"><div class="ch">💬 Wiadomości od klienta</div>'+noteList(o.clientNotes,'')+'</div>';
-  h+='<div class="card"><div class="ch">⚠️ Reklamacje</div>'+noteList(o.complaint,'ni-comp');
-  h+='<div style="margin-top:9px"><div class="fg"><textarea id="compTxt" rows="2" placeholder="Opis reklamacji…"></textarea></div>';
-  h+='<div class="fuz" onclick="document.getElementById(\'compF\').click()">📎 Dodaj zdjęcia<input type="file" id="compF" multiple accept="image/*,.pdf" onchange="handleCompChange(this)"></div>';
+  // CLIENT NOTIFS
+  h+='<div class="card"><div class="ch">📢 '+t('clientNotifs')+'</div>'
+    +noteList(o.clientNotifs||[],'ni-notif')
+    +'<div style="margin-top:10px"><div class="fg"><textarea id="cNote" rows="2" placeholder="'+t('sendToClient')+'…"></textarea></div>'
+    +'<button class="btn btn-p btn-sm" onclick="addNote(\'client\')">'+t('sendToClient')+'</button></div></div>';
+
+  // CLIENT MESSAGES (read-only)
+  h+='<div class="card"><div class="ch">💬 '+t('clientMsgs')+'</div>'+noteList(o.clientNotes||[],'')+'</div>';
+
+  // COMPLAINTS
+  h+='<div class="card"><div class="ch">⚠️ '+t('complaints')+'</div>'+noteList(o.complaint||[],'ni-comp');
+  h+='<div style="margin-top:10px"><div class="fg"><textarea id="compTxt" rows="2" placeholder="'+t('complaint')+'"></textarea></div>';
+  h+='<div class="fuz" onclick="document.getElementById(\'compF\').click()">📎 '+t('addComplaintFiles')+'<input type="file" id="compF" multiple accept="image/*,.pdf" onchange="handleCompChange(this)"></div>';
   h+='<div class="fl" id="compFL" style="margin-top:6px"></div>';
-  h+='<button class="btn btn-no btn-sm" style="margin-top:8px" onclick="addWorkerComplaint()">⚠️ Zgłoś reklamację</button>';
+  h+='<button class="btn btn-no btn-sm" style="margin-top:8px" onclick="addWorkerComplaint()">'+t('addComplaintBtn')+'</button>';
   h+='</div></div>';
 
   el.innerHTML=h;
@@ -451,25 +683,28 @@ function renderDetail(o){
 
 function accRow(label,status,notes,warn){
   const cls=status==='YES'?'a-y':status==='NO'?'a-n':'a-p';
-  const txt=status==='YES'?'✓ Zaakceptowane':status==='NO'?'✗ Odrzucone':'⏳ Oczekuje';
+  const txt=status==='YES'?t('yes'):status==='NO'?t('no'):t('pend');
   let h='<div class="acc-row"><div class="acc-lbl">'+label+'</div><div class="acc-st '+cls+'">'+txt+'</div>';
-  if(warn) h+='<div class="acc-note" style="color:var(--no)">⚠ '+warn+'</div>';
-  else if(notes&&notes.length) h+='<div class="acc-note"><strong>Uwagi klienta:</strong> '+notes.map(n=>esc(n.text)).join(' | ')+'</div>';
+  if(warn)h+='<div class="acc-note" style="color:var(--no)">'+warn+'</div>';
+  else if(notes&&notes.length)h+='<div class="acc-note">'+notes.map(n=>esc(n.text)).join(' | ')+'</div>';
   h+='</div>';return h;
 }
+
 function upSec(title,field,files){
   const a=Array.isArray(files)?files:(files?[files]:[]);
-  return '<div class="card"><div class="ch">'+title+'</div>'+fileList(a)
-    +'<div class="fuz" onclick="document.getElementById(\'u_'+field+'\').click()">📎 Kliknij aby dodać plik<input type="file" id="u_'+field+'" multiple onchange="handleUp(this,\''+field+'\')"></div></div>';
+  return '<div class="card"><div class="ch">'+title+'</div>'+fileList(a)+upBox(field)+'</div>';
+}
+function upBox(field){
+  return '<div class="fuz" onclick="document.getElementById(\'u_'+field+'\').click()">📎 '+t('clickUpload')+'<input type="file" id="u_'+field+'" multiple onchange="handleUp(this,\''+field+'\')"></div>';
 }
 function fileList(f){
   const a=Array.isArray(f)?f:(f?[f]:[]);
-  if(!a.length)return '<p style="color:var(--m);font-size:12px">Brak plików</p>';
-  return '<div class="fl">'+a.map(x=>'<a class="fc" href="'+esc(x.viewUrl||x.url||'#')+'" target="_blank">📎 '+esc(x.name||'Plik')+'</a>').join('')+'</div>';
+  if(!a.length)return'<p style="color:var(--m);font-size:13px">'+t('noFiles')+'</p>';
+  return'<div class="fl">'+a.map(x=>'<a class="fc" href="'+esc(x.viewUrl||x.url||'#')+'" target="_blank">📎 '+esc(x.name||'Plik')+'</a>').join('')+'</div>';
 }
 function noteList(n,cls){
-  if(!n||!n.length)return '<p style="color:var(--m);font-size:12px">Brak</p>';
-  return n.map(x=>'<div class="ni '+(cls||'')+'"><div>'+esc(x.text)+'</div><div class="nm">'+fmtDT(x.ts)+' · '+esc(x.by||'')+'</div></div>').join('');
+  if(!n||!n.length)return'<p style="color:var(--m);font-size:13px">'+t('noBg')+'</p>';
+  return n.map(x=>'<div class="ni '+(cls||'')+'"><div style="font-size:14px">'+esc(x.text)+'</div><div class="nm">'+fmtDT(x.ts)+' · '+esc(x.by||'')+'</div></div>').join('');
 }
 
 async function saveOrder(){
@@ -485,25 +720,16 @@ async function saveOrder(){
     sender:       document.getElementById('eSender').value.trim(),
     deliveryAddr: document.getElementById('eAddr').value.trim(),
   };
-  try{
-    const r=await api({action:'updateOrder',orderId:curId,fields});
-    if(r.error)throw new Error(r.error);
-    toast('Zapisano');openOrder(curId);
-  }catch(e){toast(e.message,'error')}
+  try{const r=await api({action:'updateOrder',orderId:curId,fields});if(r.error)throw new Error(r.error);toast(t('saved'));openOrder(curId)}catch(e){toast(e.message,'error')}
 }
 
-// Powyżej 3MB base64 — wysyłka fragmentami (szybciej, bez timeoutów)
-const CHUNK_THRESHOLD=3000000, CHUNK_SIZE=80000;
-
+// CHUNK UPLOAD
+const CHUNK_THRESHOLD=3000000,CHUNK_SIZE=80000;
 async function handleUp(inp,field){
   if(!inp.files.length)return;
-  toast('Przesyłanie…');
-  try{
-    for(const f of inp.files){ await uploadOne(f,field) }
-    toast('Przesłano');openOrder(curId);
-  }catch(e){toast(e.message,'error')}
+  toast('…');
+  try{for(const f of inp.files){await uploadOne(f,field)}toast(t('uploaded'));openOrder(curId)}catch(e){toast(e.message,'error')}
 }
-
 function uploadOne(file,field){
   return new Promise((res,rej)=>{
     const r=new FileReader();
@@ -513,8 +739,7 @@ function uploadOne(file,field){
         const meta={fileName:file.name,mimeType:file.type||'application/octet-stream',orderId:curId,fileCategory:field};
         if(b64.length<=CHUNK_THRESHOLD){
           const out=await apiPost(Object.assign({action:'uploadWorkerFile',base64:b64},meta));
-          if(out&&out.error)throw new Error(out.error);
-          res(out);
+          if(out&&out.error)throw new Error(out.error);res(out);
         }else{
           const uploadId='u'+Date.now()+Math.floor(Math.random()*1e6);
           const total=Math.ceil(b64.length/CHUNK_SIZE);
@@ -523,8 +748,7 @@ function uploadOne(file,field){
             if(out&&out.error)throw new Error(out.error);
           }
           const fin=await apiPost(Object.assign({action:'uploadFinish',uploadId,totalChunks:total},meta));
-          if(fin&&fin.error)throw new Error(fin.error);
-          res(fin);
+          if(fin&&fin.error)throw new Error(fin.error);res(fin);
         }
       }catch(e){rej(e)}
     };
@@ -532,50 +756,49 @@ function uploadOne(file,field){
   });
 }
 
-let wCompFiles=[];
 function handleCompChange(inp){
   wCompFiles=Array.from(inp.files);
   const el=document.getElementById('compFL');
-  if(el) el.innerHTML=wCompFiles.map(f=>'<span class="fc">📎 '+esc(f.name)+'</span>').join('');
+  if(el)el.innerHTML=wCompFiles.map(f=>'<span class="fc">📎 '+esc(f.name)+'</span>').join('');
 }
 async function addWorkerComplaint(){
   const txtEl=document.getElementById('compTxt');
   const txt=txtEl?txtEl.value.trim():'';
-  if(!txt){toast('Podaj opis reklamacji','error');return}
+  if(!txt){toast(t('complaint'),'error');return}
   try{
     const r=await api({action:'addComplaint',orderId:curId,text:txt});
     if(r.error)throw new Error(r.error);
-    for(const f of wCompFiles){ await uploadOne(f,'complaintFiles') }
-    toast('Reklamacja zgłoszona');wCompFiles=[];openOrder(curId);
+    for(const f of wCompFiles){await uploadOne(f,'complaintFiles')}
+    toast(t('sent'));wCompFiles=[];openOrder(curId);
   }catch(e){toast(e.message,'error')}
 }
 
 async function addNote(type){
   const el=document.getElementById(type==='team'?'tNote':'cNote');
-  const txt=el?el.value.trim():'';
-  if(!txt)return;
+  const txt=el?el.value.trim():'';if(!txt)return;
   try{
     const r=await api({action:type==='team'?'addTeamNote':'addClientNotif',orderId:curId,text:txt});
-    if(r.error)throw new Error(r.error);
-    toast('Dodano');openOrder(curId);
+    if(r.error)throw new Error(r.error);toast(t('sent'));openOrder(curId);
   }catch(e){toast(e.message,'error')}
 }
 
+// KEYBOARD
 document.getElementById('inPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inPass').focus()});
 
-(function init(){
-  if(session){
-    // Jedno wywołanie: dane użytkownika + zlecenia + lista pracowników
-    api({action:'init'}).then(r=>{
-      if(r.error||!r.success||(r.me.role!=='worker'&&r.me.role!=='admin')){doLogout();return}
-      userName=r.me.name;userRole=r.me.role;
-      allOrders=r.orders||[];ordersLoaded=true;
-      workers=r.workers||[];
-      showApp(false);
-    }).catch(()=>doLogout());
-  }
-})();
+// INIT
+applyLang();
+document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active',b.dataset.l===cl));
+if(session){
+  api({action:'init'}).then(r=>{
+    if(r.error||(r.me&&r.me.role!=='worker'&&r.me.role!=='admin')){doLogout();return}
+    if(!r.me){doLogout();return}
+    userName=r.me.name;userRole=r.me.role;
+    allOrders=r.orders||[];ordersLoaded=true;
+    workers=r.workers||[];clients=r.clients||[];
+    showApp(false);
+  }).catch(()=>doLogout());
+}
 </script>
 </body>
 </html>

@@ -85,8 +85,8 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px;line-height:1.5}
 .fuz{border:2px dashed #555;border-radius:var(--r);padding:14px;text-align:center;cursor:pointer;font-size:12px;color:#aaa;margin-top:7px;font-weight:600}
 .fuz:hover{border-color:var(--yw);background:#3a3200}.fuz input{display:none}
 .ni{padding:11px 14px;background:#333;border-radius:6px;margin-bottom:8px;font-size:14px;border-left:3px solid var(--yw);line-height:1.6}
-.ni-notif{border-left-color:#3b82f6;background:#eff6ff}
-.ni-comp{border-left-color:var(--no);background:var(--nob)}
+.ni-notif{border-left-color:#60a5fa;background:#1e3a5f;color:#bfdbfe}
+.ni-comp{border-left-color:#f87171;background:#450a0a;color:#fecaca}
 .ni .nm{font-size:12px;color:var(--m);margin-top:5px;font-weight:600}
 .ab{padding:14px;border-radius:var(--r);border:2px solid var(--b);margin-top:11px}
 .ab.pend{border-color:var(--yw);background:var(--yw-l)}
@@ -487,8 +487,20 @@ function showView(v){
 /* ============================================================
    SETTINGS
    ============================================================ */
+function setFontSize(sz){
+  localStorage.setItem('s55_fontsize',sz);
+  document.body.style.fontSize=sz+'px';
+  renderSettings();
+}
+
 function renderSettings(){
+  const sz=parseInt(localStorage.getItem('s55_fontsize')||'15');
+  const sizes=[{v:13,l:'Mały'},{v:15,l:'Normalny'},{v:17,l:'Duży'},{v:19,l:'Bardzo duży'}];
   document.getElementById('vSettings').innerHTML =
+   '<div class="card"><div class="ch">🔤 Rozmiar czcionki</div>'+
+   '<div style="display:flex;gap:8px;margin-bottom:4px;flex-wrap:wrap">'+
+   sizes.map(function(s){return '<button class="btn '+(sz===s.v?'btn-p':'btn-o')+' btn-sm" onclick="setFontSize('+s.v+')">'+s.l+' ('+s.v+'px)</button>';}).join('')+
+   '</div></div>'+
    '<div class="card"><div class="ch">🔑 '+t('changePwd')+'</div>'+
    '<div class="fg"><label>'+t('oldPwd')+'</label><input id="sOld" type="password"></div>'+
    '<div class="fg"><label>'+t('newPwd')+'</label><input id="sNew" type="password"></div>'+
@@ -738,9 +750,7 @@ function renderDetail(o,el){
 
   // ACCEPTANCE (only while PENDING)
   if(o.status==='PENDING'){
-    h+='<div class="card"><div class="ch">🎨 '+t('viz')+'</div>'
-      +(o.vizFiles&&o.vizFiles.length?fileList(o.vizFiles):'<p style="color:var(--m);font-size:12px">'+t('waiting')+'</p>')
-      +(o.vizFiles&&o.vizFiles.length?accBox('viz',o.vizStatus,o.vizNotes,o.id):'')+'</div>';
+    h+=renderClientVizProducts(o);
 
     h+='<div class="card"><div class="ch">💰 '+t('cost')+'</div>'
       +(o.costFile?'<div class="fl"><a class="fc" href="'+esc(o.costFile.viewUrl||o.costFile.url)+'" target="_blank">📄 '+esc(o.costFile.name)+'</a></div>':'<p style="color:var(--m);font-size:12px">'+t('waiting')+'</p>')
@@ -788,6 +798,60 @@ function renderDetail(o,el){
     +'<button class="btn btn-no btn-sm" onclick="sendComplaint(\''+o.id+'\')">'+t('sendComplaint')+'</button></div></div>';
 
   el.innerHTML=h;
+}
+
+// ── VIZ PRODUCTS (widok klienta) ──
+function renderClientVizProducts(o){
+  const prods=o.vizProducts||[];
+  let h='<div class="card"><div class="ch">🎨 '+t('viz')+'</div>';
+  if(!prods.length){
+    h+='<p style="color:var(--m);font-size:13px">'+t('waiting')+'</p>';
+  }else{
+    prods.forEach(function(p){
+      const hasFiles=p.files&&p.files.length>0;
+      h+='<div style="border:1px solid var(--b);border-radius:6px;padding:12px;margin-bottom:10px">';
+      h+='<div style="font-size:15px;font-weight:700;margin-bottom:8px">'+esc(p.name)+'</div>';
+      if(hasFiles){
+        h+='<div class="fl" style="margin-bottom:10px">'+p.files.map(function(f){
+          return '<a class="fc" href="'+esc(f.viewUrl||f.url||'#')+'" target="_blank">📎 '+esc(f.name)+'</a>';
+        }).join('')+'</div>';
+        h+=accBox('viz_'+p.id,p.status||'PENDING',p.notes||[],o.id);
+      }else{
+        h+='<p style="color:var(--m);font-size:13px">'+t('waiting')+'</p>';
+      }
+      h+='</div>';
+    });
+  }
+  h+='</div>';
+  return h;
+}
+
+function doAcceptVizProduct(oid,productId,accept){
+  if(accept){
+    document.getElementById('cfmTitle').textContent=t('confirmTitle');
+    document.getElementById('cfmMsg').textContent=t('confirmMsg');
+    document.getElementById('cfmOk').textContent=t('confirmYes');
+    document.getElementById('cfmNo').textContent=t('confirmNo');
+    showCfm(async function(){
+      try{
+        const r=await api({action:'acceptVizProduct',orderId:oid,productId:productId,accept:true});
+        if(r.error)throw new Error(r.error);
+        if(r.converted){toast(t('converted'));setTimeout(function(){showView('list')},1600)}
+        else{toast(t('accepted'));openOrder(oid)}
+      }catch(e){toast(e.message,'error')}
+    });
+  }else{
+    const el=document.getElementById('nt_viz_'+productId);
+    const note=el?el.value.trim():'';
+    if(!note){toast(t('noteReq'),'error');if(el)el.focus();return}
+    (async function(){
+      try{
+        const r=await api({action:'acceptVizProduct',orderId:oid,productId:productId,accept:false,note:note});
+        if(r.error)throw new Error(r.error);
+        toast(t('sent'));openOrder(oid);
+      }catch(e){toast(e.message,'error')}
+    })();
+  }
 }
 
 function di(l,v){return'<div class="di"><div class="lbl">'+l+'</div><div class="val">'+esc(v)+'</div></div>'}
@@ -925,6 +989,7 @@ document.getElementById('inPass').addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inPass').focus()});
 
 (function init(){
+  const savedSz=localStorage.getItem('s55_fontsize');if(savedSz)document.body.style.fontSize=savedSz+'px';
   document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active', b.dataset.l===cl));
   if(session){
     userName=localStorage.getItem('s55_name')||'';

@@ -85,7 +85,7 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 .dots{display:inline-flex;gap:5px;align-items:center}
 .dot-wrap{position:relative;cursor:default}
 .dot{width:10px;height:10px;border-radius:50%;display:inline-block;cursor:help}
-.d-y{background:#4ade80}.d-n{background:#f87171}.d-p{background:#666}
+.d-y{background:#4ade80}.d-n{background:#f87171}.d-p{background:#666}.d-part{background:var(--yw)}
 .dot-tip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--bk2);border:1px solid var(--b);border-radius:5px;padding:4px 9px;font-size:11px;font-weight:700;white-space:nowrap;color:var(--t);z-index:50;pointer-events:none}
 .dot-wrap:hover .dot-tip{display:block}
 
@@ -183,6 +183,7 @@ const L={
 pl:{
   llLogin:'Login',llPass:'Hasło',llBtn:'Zaloguj się',
   noOrders:'Brak zleceń',back:'← Powrót',
+  vizPartial:'Częściowo',addProduct:'+ Dodaj produkt',productName:'Nazwa produktu',deleteProduct:'Usuń',noProducts:'Brak produktów — dodaj pierwszy',
   date:'Data',desc:'Opis',status:'Status',orderNo:'Nr zlecenia',clientNo:'Nr klienta',
   tracking:'Tracking',guardian:'Opiekun',acc:'Akcept.',client:'Klient',
   stPend:'Oczekuje',stProg:'W realizacji',stDone:'Zakończone',stCanc:'Anulowane',
@@ -218,6 +219,7 @@ pl:{
 en:{
   llLogin:'Login',llPass:'Password',llBtn:'Sign in',
   noOrders:'No orders',back:'← Back',
+  vizPartial:'Partial',addProduct:'+ Add product',productName:'Product name',deleteProduct:'Remove',noProducts:'No products — add the first one',
   date:'Date',desc:'Description',status:'Status',orderNo:'Order no.',clientNo:'Client no.',
   tracking:'Tracking',guardian:'Account mgr',acc:'Approvals',client:'Client',
   stPend:'Pending',stProg:'In production',stDone:'Completed',stCanc:'Cancelled',
@@ -253,6 +255,7 @@ en:{
 de:{
   llLogin:'Login',llPass:'Passwort',llBtn:'Anmelden',
   noOrders:'Keine Aufträge',back:'← Zurück',
+  vizPartial:'Teilweise',addProduct:'+ Produkt hinzufügen',productName:'Produktname',deleteProduct:'Entfernen',noProducts:'Keine Produkte — erstes hinzufügen',
   date:'Datum',desc:'Beschreibung',status:'Status',orderNo:'Auftrags-Nr.',clientNo:'Kunden-Nr.',
   tracking:'Tracking',guardian:'Betreuer',acc:'Freigaben',client:'Kunde',
   stPend:'Ausstehend',stProg:'In Produktion',stDone:'Abgeschlossen',stCanc:'Storniert',
@@ -401,6 +404,18 @@ async function showApp(mustChange){
   loadOrders();
 }
 
+function setFontSize(sz){
+  sz=parseInt(sz);
+  localStorage.setItem('s55_fontsize',sz);
+  document.body.style.fontSize=sz+'px';
+  document.querySelectorAll('.font-btn').forEach(function(b){
+    const a=parseInt(b.dataset.sz)===sz;
+    b.classList.toggle('active',a);
+    b.classList.toggle('btn-p',a);
+    b.classList.toggle('btn-o',!a);
+  });
+}
+
 async function doChangeInitPwd(){
   const p1=document.getElementById('np1').value,p2=document.getElementById('np2').value;
   if(p1!==p2){toast(t('pwdMismatch'),'error');return}
@@ -476,8 +491,9 @@ function statusBadge(s){
 }
 
 function dot(s,label){
-  const cls=s==='YES'?'d-y':s==='NO'?'d-n':'d-p';
-  return '<span class="dot-wrap"><span class="dot '+cls+'"></span><span class="dot-tip">'+esc(label)+': '+(s==='YES'?t('yes'):s==='NO'?t('no'):t('pend'))+'</span></span>';
+  const cls=s==='YES'?'d-y':s==='NO'?'d-n':s==='PARTIAL'?'d-part':'d-p';
+  const stxt=s==='YES'?t('yes'):s==='NO'?t('no'):s==='PARTIAL'?t('vizPartial')||'Częściowo':'Oczekuje';
+  return '<span class="dot-wrap"><span class="dot '+cls+'"></span><span class="dot-tip">'+esc(label)+': '+stxt+'</span></span>';
 }
 
 function filterTable(){
@@ -561,6 +577,12 @@ function showNewOrderForm(){
   </div>`;
 }
 
+function handleNewFiles(inp){
+  const el=document.getElementById('nFilesList');
+  if(!el)return;
+  el.innerHTML=Array.from(inp.files).map(f=>'<span class="fc">📎 '+esc(f.name)+'</span>').join('');
+}
+
 async function submitNewOrder(){
   const clientId=document.getElementById('nClient').value;
   const desc=document.getElementById('nDesc').value.trim();
@@ -579,6 +601,12 @@ async function submitNewOrder(){
       guardian:document.getElementById('nGuardian').value,
     }});
     if(r.error)throw new Error(r.error);
+    // Upload załączników jeśli są
+    const nf=document.getElementById('nFiles');
+    if(nf&&nf.files.length){
+      curId=r.orderId;
+      for(const f of nf.files){await uploadOne(f,'attachments')}
+    }
     toast(t('saved'));
     document.getElementById('newOrderArea').innerHTML='';
     loadOrders(true);
@@ -646,7 +674,7 @@ function renderDetail(o){
     +upBox('trackingFile')+'</div>';
 
   // FILES
-  h+=upSec('🎨 '+t('vizSec'),'vizFiles',o.vizFiles);
+  h+=renderVizProducts(o);
   h+=upSec('💰 '+t('costSec'),'costFile',o.costFile?[o.costFile]:[]);
   h+=upSec('📸 '+t('photoSec'),'prodPhotos',o.prodPhotos);
   h+=upSec('🧾 '+t('invSec'),'invoiceFile',o.invoiceFile?[o.invoiceFile]:[]);
@@ -680,6 +708,99 @@ function renderDetail(o){
   h+='</div></div>';
 
   el.innerHTML=h;
+}
+
+// ── VIZ PRODUCTS UI ──
+function renderVizProducts(o){
+  const prods=o.vizProducts||[];
+  let h='<div class="card"><div class="ch">🎨 '+t('vizSec');
+  h+=' <button class="btn btn-p btn-sm" onclick="addVizProduct()">'+t('addProduct')+'</button></div>';
+  if(!prods.length){
+    h+='<p style="color:var(--m);font-size:13px">'+t('noProducts')+'</p>';
+  }else{
+    prods.forEach(function(p){
+      const st=p.status||'PENDING';
+      const stCls=st==='YES'?'color:#4ade80':st==='NO'?'color:#f87171':'color:#aaa';
+      const stTxt=st==='YES'?t('yes'):st==='NO'?t('no'):t('pend');
+      const pid=p.id;
+      h+='<div style="border:1px solid var(--b);border-radius:6px;padding:12px;margin-bottom:10px">';
+      h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+      h+='<strong style="font-size:14px">'+esc(p.name)+'</strong>';
+      h+='<div style="display:flex;align-items:center;gap:8px">';
+      h+='<span style="font-size:12px;font-weight:700;'+stCls+'">'+stTxt+'</span>';
+      h+='<button class="btn btn-no btn-sm" data-delproduct="'+pid+'" onclick="deleteVizProduct(this.dataset.delproduct)">✕</button>';
+      h+='</div></div>';
+      if(p.files&&p.files.length){
+        h+='<div class="fl" style="margin-bottom:8px">'+p.files.map(function(f){return '<a class="fc" href="'+esc(f.viewUrl||f.url||'#')+'" target="_blank">📎 '+esc(f.name)+'</a>';}).join('')+'</div>';
+      }else{
+        h+='<p style="color:var(--m);font-size:12px;margin-bottom:6px">'+t('noFiles')+'</p>';
+      }
+      h+='<div class="fuz" data-vpid="'+pid+'" onclick="this.querySelector(\"input\").click()">📎 '+t('clickUpload')+'<input type="file" multiple data-vpid="'+pid+'" onchange="handleVizProductUp(this,this.dataset.vpid)"></div>';
+      if(p.notes&&p.notes.length){
+        h+='<div style="margin-top:8px">';
+        p.notes.forEach(function(n){h+='<div class="ni ni-comp"><div>'+esc(n.text)+'</div><div class="nm">'+fmtDT(n.ts)+' · '+esc(n.by||'')+'</div></div>';});
+        h+='</div>';
+      }
+      h+='</div>';
+    });
+  }
+  h+='</div>';
+  return h;
+}
+async function addVizProduct(){
+  const name=prompt(t('productName'));
+  if(!name||!name.trim())return;
+  try{
+    const r=await api({action:'addVizProduct',orderId:curId,productName:name.trim()});
+    if(r.error)throw new Error(r.error);
+    toast(t('saved'));openOrder(curId);
+  }catch(e){toast(e.message,'error')}
+}
+
+async function deleteVizProduct(productId,productName){
+  if(!confirm('Usunąć produkt "'+productName+'"?'))return;
+  try{
+    const r=await api({action:'deleteVizProduct',orderId:curId,productId});
+    if(r.error)throw new Error(r.error);
+    toast(t('saved'));openOrder(curId);
+  }catch(e){toast(e.message,'error')}
+}
+
+async function handleVizProductUp(inp,productId){
+  if(!inp.files.length)return;
+  toast('…');
+  try{
+    for(const f of inp.files){
+      await uploadOneVizProduct(f,productId);
+    }
+    toast(t('uploaded'));openOrder(curId);
+  }catch(e){toast(e.message,'error')}
+}
+
+function uploadOneVizProduct(file,productId){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=async function(){
+      try{
+        const b64=r.result.split(',')[1];
+        const meta={fileName:file.name,mimeType:file.type||'application/octet-stream',orderId:curId,fileCategory:'vizProductFile',productId};
+        if(b64.length<=CHUNK_THRESHOLD){
+          const out=await apiPost(Object.assign({action:'uploadWorkerFile',base64:b64},meta));
+          if(out&&out.error)throw new Error(out.error);res(out);
+        }else{
+          const uploadId='u'+Date.now()+Math.floor(Math.random()*1e6);
+          const total=Math.ceil(b64.length/CHUNK_SIZE);
+          for(let i=0;i<total;i++){
+            const out=await apiPost({action:'uploadChunk',uploadId,chunkIndex:i,chunk:b64.substr(i*CHUNK_SIZE,CHUNK_SIZE)});
+            if(out&&out.error)throw new Error(out.error);
+          }
+          const fin=await apiPost(Object.assign({action:'uploadFinish',uploadId,totalChunks:total},meta));
+          if(fin&&fin.error)throw new Error(fin.error);res(fin);
+        }
+      }catch(e){rej(e)}
+    };
+    r.onerror=rej;r.readAsDataURL(file);
+  });
 }
 
 function accRow(label,status,notes,warn){
@@ -788,6 +909,7 @@ document.getElementById('inPass').addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inPass').focus()});
 
 // INIT
+const _sz=parseInt(localStorage.getItem('s55_fontsize')||'15');document.body.style.fontSize=_sz+'px';document.querySelectorAll('.font-btn').forEach(function(b){const a=parseInt(b.dataset.sz)===_sz;b.classList.toggle('active',a);b.classList.toggle('btn-p',a);b.classList.toggle('btn-o',!a);});
 applyLang();
 document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active',b.dataset.l===cl));
 if(session){

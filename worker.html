@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel Pracownika — studio55</title>
 <style>
-:root{--bk:#1a1a1a;--bk2:#242424;--bk3:#2a2a2a;--yw:#F5C518;--yw-d:#D4A800;--yw-l:#3a3200;--bg:#1a1a1a;--s:#2a2a2a;--b:#3a3a3a;--t:#e8e8e8;--m:#999;--r:8px;--ok:#16a34a;--okb:#14532d;--no:#dc2626;--nob:#450a0a;--bl:#3b82f6;--blb:#1e3a5f}
+:root{--bk:#1a1a1a;--bk2:#242424;--bk3:#2a2a2a;--yw:#F5C518;--yw-d:#D4A800;--yw-l:#3a3200;--bg:#1a1a1a;--s:#2a2a2a;--b:#3a3a3a;--t:#f0f0f0;--m:#aaa;--r:8px;--ok:#16a34a;--okb:#14532d;--no:#dc2626;--nob:#450a0a;--bl:#3b82f6;--blb:#1e3a5f}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bk);color:var(--t);line-height:1.6;font-size:14px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bk);color:var(--t);line-height:1.65;font-size:15px}
 
 /* LOGIN */
 .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bk);padding:20px}
@@ -26,7 +26,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 /* HEADER */
 .hdr{background:var(--bk2);display:flex;align-items:center;justify-content:flex-end;gap:10px;height:48px;border-bottom:2px solid var(--yw);position:sticky;top:0;z-index:100;padding:0 16px}
 .role-b{background:var(--yw);color:var(--bk);font-size:10px;font-weight:900;padding:4px 10px;border-radius:11px;text-transform:uppercase}
-.ub{font-size:13px;color:#ccc;background:var(--bk3);padding:4px 12px;border-radius:12px;border:1px solid var(--b);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ub{font-size:13px;color:#ddd;background:var(--bk3);padding:5px 13px;border-radius:12px;border:1px solid var(--b);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
 .lb{background:none;border:1px solid #444;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;color:#999;font-weight:700}
 .lb:hover{border-color:var(--yw);color:var(--yw)}.lb.active{background:var(--yw);color:var(--bk);border-color:var(--yw)}
 .btn-logout{background:none;border:1px solid #444;padding:5px 12px;border-radius:6px;font-size:13px;cursor:pointer;color:#888;font-weight:700}
@@ -41,11 +41,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 
 /* CARD */
 .card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:16px;margin-bottom:12px}
-.ch{font-size:12px;font-weight:800;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--yw);text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;color:var(--t)}
+.ch{font-size:13px;font-weight:800;margin-bottom:12px;padding-bottom:9px;border-bottom:2px solid var(--yw);text-transform:uppercase;letter-spacing:.4px;display:flex;justify-content:space-between;align-items:center;color:var(--t)}
 
 /* FORMS */
 .fg{margin-bottom:12px}
-.fg label{display:block;font-size:11px;font-weight:700;margin-bottom:4px;color:var(--m);text-transform:uppercase;letter-spacing:.4px}
+.fg label{display:block;font-size:12px;font-weight:700;margin-bottom:5px;color:var(--m);text-transform:uppercase;letter-spacing:.3px}
 .fg input,.fg textarea,.fg select{width:100%;padding:9px 12px;border:1px solid var(--b);border-radius:6px;font-size:14px;font-family:inherit;background:var(--bk3);color:var(--t);-webkit-text-fill-color:var(--t)}
 .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--yw);box-shadow:0 0 0 3px rgba(245,197,24,.12)}
 .fg select option{background:var(--bk3);color:var(--t)}
@@ -62,10 +62,10 @@ textarea{resize:vertical;min-height:64px}
 
 /* TABLE */
 table.otbl{width:100%;border-collapse:collapse;font-size:13px}
-.otbl th{text-align:left;padding:10px 8px;background:var(--bk2);color:#bbb;font-size:11px;font-weight:800;border-bottom:2px solid var(--yw);cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px}
+.otbl th{text-align:left;padding:11px 10px;background:var(--bk2);color:#ccc;font-size:12px;font-weight:800;border-bottom:2px solid var(--yw);cursor:pointer;user-select:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
 .otbl th:hover{color:var(--yw)}.otbl th.sorted{color:var(--yw)}
 .otbl th .arr{font-size:9px;margin-left:3px;opacity:.4}.otbl th.sorted .arr{opacity:1}
-.otbl td{padding:9px 8px;border-bottom:1px solid var(--b);vertical-align:middle}
+.otbl td{padding:12px 10px;border-bottom:1px solid var(--b);vertical-align:middle;font-size:14px;line-height:1.5}
 .otbl tr.dr{cursor:pointer}.otbl tr.dr:hover td{background:var(--yw-l)}
 .nowrap{white-space:nowrap}
 
@@ -77,7 +77,7 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 .fbar input[type=text]{min-width:200px;flex:1}
 
 /* STATUS */
-.st{display:inline-block;padding:3px 10px;border-radius:11px;font-size:11px;font-weight:800;white-space:nowrap}
+.st{display:inline-block;padding:4px 11px;border-radius:11px;font-size:12px;font-weight:800;white-space:nowrap}
 .st-pend{background:#333;color:var(--yw)}.st-prog{background:var(--yw-l);color:var(--yw)}
 .st-done{background:var(--okb);color:#4ade80}.st-canc{background:var(--nob);color:#f87171}
 
@@ -91,17 +91,17 @@ table.otbl{width:100%;border-collapse:collapse;font-size:13px}
 
 /* FILES */
 .fl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.fc{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;background:var(--bk3);border:1px solid var(--b);border-radius:6px;font-size:12px;text-decoration:none;color:var(--t);font-weight:600}
+.fc{display:inline-flex;align-items:center;gap:5px;padding:8px 13px;background:var(--bk3);border:1px solid var(--b);border-radius:6px;font-size:13px;text-decoration:none;color:var(--t);font-weight:600}
 .fc:hover{border-color:var(--yw)}
 .fuz{border:2px dashed var(--b);border-radius:var(--r);padding:13px;text-align:center;cursor:pointer;font-size:13px;color:var(--m);margin-top:8px;font-weight:600}
 .fuz:hover{border-color:var(--yw);background:var(--yw-l)}.fuz input{display:none}
 
 /* NOTES */
-.ni{padding:10px 12px;background:var(--bk3);border-radius:6px;margin-bottom:7px;font-size:13px;border-left:3px solid var(--yw);line-height:1.5}
+.ni{padding:11px 14px;background:var(--bk3);border-radius:6px;margin-bottom:8px;font-size:14px;border-left:3px solid var(--yw);line-height:1.6}
 .ni-team{border-left-color:#8b5cf6;background:#1e1b2e}
 .ni-notif{border-left-color:var(--bl);background:var(--blb)}
 .ni-comp{border-left-color:var(--no);background:var(--nob)}
-.ni .nm{font-size:11px;color:var(--m);margin-top:4px;font-weight:600}
+.ni .nm{font-size:12px;color:var(--m);margin-top:5px;font-weight:600}
 
 /* ACC */
 .acc-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--b);flex-wrap:wrap}
@@ -363,6 +363,7 @@ async function doLogin(){
     if(r.orders){allOrders=r.orders;ordersLoaded=true}
     if(r.workers)workers=r.workers;
     if(r.clients)clients=r.clients;
+    if(r.lang) setLang(r.lang);
     showApp(r.mustChangePassword);
   }catch(e){err.textContent=e.message}
   finally{btn.disabled=false}
@@ -796,6 +797,7 @@ if(session){
     userName=r.me.name;userRole=r.me.role;
     allOrders=r.orders||[];ordersLoaded=true;
     workers=r.workers||[];clients=r.clients||[];
+    if(r.me&&r.me.lang) setLang(r.me.lang);
     showApp(false);
   }).catch(()=>doLogout());
 }

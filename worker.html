@@ -601,12 +601,11 @@ async function submitNewOrder(){
       guardian:document.getElementById('nGuardian').value,
     }});
     if(r.error)throw new Error(r.error);
-    // Upload załączników jeśli są
+    curId=r.orderId;
+    const nwf=document.getElementById('nWaybillFile');
+    if(nwf&&nwf.files.length){for(const f of nwf.files){await uploadOne(f,'trackingFile')}}
     const nf=document.getElementById('nFiles');
-    if(nf&&nf.files.length){
-      curId=r.orderId;
-      for(const f of nf.files){await uploadOne(f,'attachments')}
-    }
+    if(nf&&nf.files.length){for(const f of nf.files){await uploadOne(f,'attachments')}}
     toast(t('saved'));
     document.getElementById('newOrderArea').innerHTML='';
     loadOrders(true);

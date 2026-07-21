@@ -135,6 +135,7 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbw1kf--4WLCmiuvKv9cGYdu
 <div id="appView" style="display:none">
 <div class="hdr">
   <div><button class="lb active" onclick="setLang('pl')" data-l="pl">PL</button><button class="lb" onclick="setLang('en')" data-l="en">EN</button><button class="lb" onclick="setLang('de')" data-l="de">DE</button></div>
+  <div style="display:flex;gap:3px;align-items:center;border-left:1px solid #444;padding-left:8px;margin-left:4px"><span style="font-size:10px;color:#666;margin-right:2px">A</span><button class="lb font-btn" data-sz="13" onclick="setFontSize(13)">S</button><button class="lb font-btn" data-sz="15" onclick="setFontSize(15)">M</button><button class="lb font-btn" data-sz="17" onclick="setFontSize(17)">L</button><button class="lb font-btn" data-sz="19" onclick="setFontSize(19)">XL</button></div>
   <span class="ub" id="userLabel"></span>
   <button class="btn-logout" onclick="doLogout()" id="bLogout">⏻</button>
 </div>
@@ -488,9 +489,17 @@ function showView(v){
    SETTINGS
    ============================================================ */
 function setFontSize(sz){
+  sz=parseInt(sz);
   localStorage.setItem('s55_fontsize',sz);
   document.body.style.fontSize=sz+'px';
-  renderSettings();
+  document.querySelectorAll('.font-btn').forEach(function(b){
+    const a=parseInt(b.dataset.sz)===sz;
+    b.classList.toggle('active',a);
+    b.classList.toggle('btn-p',a);
+    b.classList.toggle('btn-o',!a);
+  });
+  // Odśwież ustawienia jeśli otwarte
+  if(document.getElementById('vSettings')&&document.getElementById('vSettings').style.display!=='none') renderSettings();
 }
 
 function renderSettings(){
@@ -989,7 +998,7 @@ document.getElementById('inPass').addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inPass').focus()});
 
 (function init(){
-  const savedSz=localStorage.getItem('s55_fontsize');if(savedSz)document.body.style.fontSize=savedSz+'px';
+  const savedSz=parseInt(localStorage.getItem('s55_fontsize')||'15');document.body.style.fontSize=savedSz+'px';document.querySelectorAll('.font-btn').forEach(function(b){const a=parseInt(b.dataset.sz)===savedSz;b.classList.toggle('active',a);b.classList.toggle('btn-p',a);b.classList.toggle('btn-o',!a);});
   document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active', b.dataset.l===cl));
   if(session){
     userName=localStorage.getItem('s55_name')||'';

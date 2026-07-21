@@ -194,6 +194,7 @@ let userName  = '', userCompany = '', userLogo = '';
 let mustChangePwd = false, cfmCb = null;
 let cl = localStorage.getItem('s55_lang') || 'pl';
 let allOrders = [], sortCol = 'dateCreated', sortDir = 'desc';
+let canCreateOrders = false;
 let ordersLoaded = false; // czy mamy już świeże dane (np. z logowania/init)
 
 /* ============================================================
@@ -403,6 +404,7 @@ async function doLogin(){
     localStorage.setItem('s55_login',document.getElementById('inLogin').value.trim().toLowerCase());
     // Login zwraca już listę zleceń — pomijamy osobne zapytanie
     if(r.orders){ allOrders=r.orders; ordersLoaded=true }
+    canCreateOrders = r.canCreateOrders === true;
     showApp();
   }catch(e){err.textContent=e.message}
   finally{btn.disabled=false}
@@ -443,6 +445,11 @@ function showApp(){
   }else{
     document.getElementById('pwdPrompt').style.display='none';
     document.getElementById('mainArea').style.display='';
+    // Pokaż/ukryj zakładkę "Nowe zlecenie" zależnie od uprawnień
+    const tabNew=document.getElementById('tabNew');
+    if(tabNew){
+      tabNew.style.display=canCreateOrders?'':'none';
+    }
     showView('list');
   }
   applyLang();
@@ -926,6 +933,7 @@ document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='En
       localStorage.setItem('s55_name',userName);
       localStorage.setItem('s55_logo',userLogo);
       allOrders=r.orders||[];ordersLoaded=true;
+      canCreateOrders=r.me.canCreateOrders===true;
       mustChangePwd=false; showApp();
       // Odświeżaj sesję co 20 minut — zapobiega wylogowaniu przy długiej pracy
       setInterval(()=>{if(session)api({action:'refreshSession'}).catch(()=>{})}, 20*60*1000);

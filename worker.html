@@ -408,7 +408,11 @@ async function showApp(mustChange){
 function setFontSize(sz){
   sz=parseInt(sz);
   localStorage.setItem('s55_fontsize',sz);
-  document.body.style.fontSize=sz+'px';
+  // Zoom skaluje WSZYSTKO proporcjonalnie — nagłówki, tabele, przyciski, pola
+  const zoomMap={13:0.87, 15:1.0, 17:1.13, 19:1.27};
+  const z=zoomMap[sz]||1.0;
+  const app=document.getElementById('appView');
+  if(app) app.style.zoom=z;
   document.querySelectorAll('.font-btn').forEach(function(b){
     const a=parseInt(b.dataset.sz)===sz;
     b.classList.toggle('active',a);
@@ -909,7 +913,7 @@ document.getElementById('inPass').addEventListener('keydown',e=>{if(e.key==='Ent
 document.getElementById('inLogin').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('inPass').focus()});
 
 // INIT
-const _sz=parseInt(localStorage.getItem('s55_fontsize')||'15');document.body.style.fontSize=_sz+'px';document.querySelectorAll('.font-btn').forEach(function(b){const a=parseInt(b.dataset.sz)===_sz;b.classList.toggle('active',a);b.classList.toggle('btn-p',a);b.classList.toggle('btn-o',!a);});
+setTimeout(function(){const sz=parseInt(localStorage.getItem('s55_fontsize')||'15');setFontSize(sz);},0);
 applyLang();
 document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active',b.dataset.l===cl));
 if(session){

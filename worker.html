@@ -922,7 +922,7 @@ function setProgress(pct,sub){
 }
 function hideProgress(){const e=document.getElementById('_prog');if(e)e.remove();_progEl=null;}
 
-const CHUNK_THRESHOLD=4000000,CHUNK_SIZE=90000;
+const CHUNK_THRESHOLD=9000000,CHUNK_SIZE=80000;
 async function handleUp(inp,field){
   if(!inp.files.length)return;
   const _files=Array.from(inp.files);
@@ -958,10 +958,16 @@ async function _doUpload(b64, meta, onProgress){
   }
   const uploadId='u'+Date.now()+(Math.random()*1e6|0);
   const total=Math.ceil(b64.length/CHUNK_SIZE);
-  for(let i=0;i<total;i++){
-    const out=await apiPost({action:'uploadChunk',uploadId,chunkIndex:i,chunk:b64.substr(i*CHUNK_SIZE,CHUNK_SIZE)});
-    if(out&&out.error)throw new Error(out.error);
-    if(onProgress)onProgress(Math.round(((i+1)/total)*85));
+  // Wysyłaj 3 chunki równolegle — 3x szybciej dla dużych plików
+  const PARALLEL=3;
+  for(let i=0;i<total;i+=PARALLEL){
+    const batch=[];
+    for(let j=i;j<Math.min(i+PARALLEL,total);j++){
+      batch.push(apiPost({action:'uploadChunk',uploadId,chunkIndex:j,chunk:b64.substr(j*CHUNK_SIZE,CHUNK_SIZE)}));
+    }
+    const results=await Promise.all(batch);
+    for(const out of results){if(out&&out.error)throw new Error(out.error);}
+    if(onProgress)onProgress(Math.round(((Math.min(i+PARALLEL,total))/total)*85));
   }
   const fin=await apiPost(Object.assign({action:'uploadFinish',uploadId,totalChunks:total},meta));
   if(fin&&fin.error)throw new Error(fin.error);

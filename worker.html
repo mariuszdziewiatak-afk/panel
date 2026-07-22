@@ -715,7 +715,7 @@ function renderDetail(o){
   h+='<div class="card"><div class="ch">💬 '+t('clientMsgs')+'</div>'+noteList(o.clientNotes||[],'')+'</div>';
 
   // COMPLAINTS
-  h+='<div class="card"><div class="ch">⚠️ '+t('complaints')+'</div>'+noteList(o.complaint||[],'ni-comp');
+  h+='<div class="card"><div class="ch">⚠️ '+t('complaints')+'</div><div id="complaintSection">'+noteList(o.complaint||[],'ni-comp')+'</div>';
   h+='<div style="margin-top:10px"><div class="fg"><textarea id="compTxt" rows="2" placeholder="'+t('complaint')+'"></textarea></div>';
   h+='<label for="compF" class="fuz" style="display:block;cursor:pointer">📎 '+t('addComplaintFiles')+'<input type="file" id="compF" style="display:none" multiple accept="image/*,.pdf" onchange="handleCompChange(this)"></label>';
   h+='<div class="fl" id="compFL" style="margin-top:6px"></div>';
@@ -856,7 +856,16 @@ function fileList(f){
 }
 function noteList(n,cls){
   if(!n||!n.length)return'<p style="color:var(--m);font-size:13px">'+t('noBg')+'</p>';
-  return n.map(x=>'<div class="ni '+(cls||'')+'"><div style="font-size:14px">'+esc(x.text)+'</div><div class="nm">'+fmtDT(x.ts)+' · '+esc(x.by||'')+'</div></div>').join('');
+  return n.map(function(x){
+    let h='<div class="ni '+(cls||'')+'"><div style="font-size:14px">'+esc(x.text)+'</div>';
+    if(x.files&&x.files.length){
+      h+='<div class="fl" style="margin-top:6px">'+x.files.map(function(f){
+        return'<a class="fc" href="'+esc(f.viewUrl||f.url||'#')+'" target="_blank">📎 '+esc(f.name)+'</a>';
+      }).join('')+'</div>';
+    }
+    h+='<div class="nm">'+fmtDT(x.ts)+' · '+esc(x.by||'')+'</div></div>';
+    return h;
+  }).join('');
 }
 
 // Szybka aktualizacja lokalnego obiektu bez full reload
@@ -913,7 +922,7 @@ function setProgress(pct,sub){
 }
 function hideProgress(){const e=document.getElementById('_prog');if(e)e.remove();_progEl=null;}
 
-const CHUNK_THRESHOLD=4000000,CHUNK_SIZE=200000;
+const CHUNK_THRESHOLD=4000000,CHUNK_SIZE=90000;
 async function handleUp(inp,field){
   if(!inp.files.length)return;
   const _files=Array.from(inp.files);

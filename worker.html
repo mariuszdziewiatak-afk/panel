@@ -701,7 +701,7 @@ function renderDetail(o){
 
   // TEAM NOTES
   h+='<div class="card"><div class="ch">🔒 '+t('teamNotes')+' <span style="font-size:10px;font-weight:400;color:var(--m);text-transform:none">'+t('teamNotesInfo')+'</span></div>'
-    +noteList(o.teamNotes||[],'ni-team')
+    +'<div id="teamNotesSection">'+noteList(o.teamNotes||[],'ni-team')+'</div>'
     +'<div style="margin-top:10px"><div class="fg"><textarea id="tNote" rows="2" placeholder="'+t('addTeamNote')+'…"></textarea></div>'
     +'<button class="btn btn-o btn-sm" onclick="addNote(\'team\')">+ '+t('addTeamNote')+'</button></div></div>';
 

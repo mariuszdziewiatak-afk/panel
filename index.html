@@ -94,6 +94,11 @@ table.otbl{width:100%;border-collapse:collapse;font-size:0.8125rem;line-height:1
 .ab.no{border-color:var(--no);background:var(--nob)}
 .conv-banner{padding:15px;border-radius:var(--r);background:var(--okb);border:2px solid var(--ok);text-align:center;font-weight:800;color:var(--ok);margin-bottom:12px}
 .pwd-card{background:#3a3200;border:2px solid var(--yw);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.prog-wrap{position:fixed;bottom:16px;right:16px;background:var(--bk2);border:1px solid var(--b);border-radius:10px;padding:12px 16px;z-index:1001;min-width:220px;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.prog-label{font-size:12px;color:#ccc;margin-bottom:7px;font-weight:600}
+.prog-bar{height:7px;background:#333;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:var(--yw);border-radius:4px;transition:width .15s ease}
+.prog-sub{font-size:10px;color:#888;margin-top:5px;text-align:right}
 .toast{position:fixed;bottom:16px;right:16px;padding:11px 17px;border-radius:var(--r);font-size:0.8125rem;z-index:1000;color:#fff;font-weight:700;animation:su .25s}
 @keyframes su{from{transform:translateY(14px);opacity:0}}
 .loading{display:flex;justify-content:center;padding:32px}
@@ -730,6 +735,15 @@ function sortBy(c){ if(sortCol===c) sortDir=sortDir==='asc'?'desc':'asc'; else {
 /* ============================================================
    ORDER DETAIL
    ============================================================ */
+function silentRefresh(oid){
+  api({action:'getOrder',orderId:oid}).then(function(r){if(r.success){curOrder=r.order;}}).catch(function(){});
+}
+function refreshView(oid){
+  // Natychmiastowy re-render z lokalnych danych + cichy sync z serwerem
+  if(curOrder) renderDetail(curOrder);
+  silentRefresh(oid);
+}
+
 async function openOrder(id){
   showViewRaw('detail');
   const el=document.getElementById('vDetail');
@@ -858,7 +872,7 @@ function doAcceptVizProduct(oid,productId,accept){
         const r=await api({action:'acceptVizProduct',orderId:oid,productId:productId,accept:true});
         if(r.error)throw new Error(r.error);
         if(r.converted){toast(t('converted'));setTimeout(function(){showView('list')},1600)}
-        else{toast(t('accepted'));openOrder(oid)}
+        else{if(curOrder){var pv=(curOrder.vizProducts||[]).find(function(x){return x.id===productId});if(pv)pv.status='YES';}refreshView(oid);toast(t('accepted'));}
       }catch(e){toast(e.message,'error')}
     });
   }else{
@@ -869,7 +883,7 @@ function doAcceptVizProduct(oid,productId,accept){
       try{
         const r=await api({action:'acceptVizProduct',orderId:oid,productId:productId,accept:false,note:note});
         if(r.error)throw new Error(r.error);
-        toast(t('sent'));openOrder(oid);
+        if(curOrder){var pv2=(curOrder.vizProducts||[]).find(function(x){return x.id===productId});if(pv2){pv2.status='NO';if(!pv2.notes)pv2.notes=[];pv2.notes.push({text:note,ts:new Date().toISOString(),by:'?'});}}refreshView(oid);toast(t('sent'));
       }catch(e){toast(e.message,'error')}
     })();
   }
@@ -896,6 +910,8 @@ function noteList(n,cls){
   }).join('');
 }
 function accBox(field,status,notes,oid){
+  const isViz = field.indexOf('viz_')===0;
+  const productId = isViz ? field.slice(4) : null;
   const na=Array.isArray(notes)?notes:[];
   const sc=status==='YES'?'yes':status==='NO'?'no':'pend';
   let h='<div class="ab '+sc+'">';
@@ -903,16 +919,22 @@ function accBox(field,status,notes,oid){
     h+='<div style="font-weight:800;color:var(--ok)">'+t('accepted')+'</div>';
   }else{
     if(status==='NO') h+='<div style="font-weight:800;color:var(--no);margin-bottom:9px">'+t('rejected')+'</div>';
-    h+='<div style="display:flex;gap:7px;flex-wrap:wrap">'
-      +'<button class="btn btn-ok btn-sm" onclick="doAccept(\''+oid+'\',\''+field+'\',true)">✓ '+t('accept')+'</button>'
-      +'<button class="btn btn-no btn-sm" onclick="doAccept(\''+oid+'\',\''+field+'\',false)">✕ '+t('reject')+'</button></div>';
+    if(isViz){
+      h+='<div style="display:flex;gap:7px;flex-wrap:wrap">'
+        +'<button class="btn btn-ok btn-sm" onclick="doAcceptVizProduct(\''+oid+'\',\''+productId+'\',true)">✓ '+t('accept')+'</button>'
+        +'<button class="btn btn-no btn-sm" onclick="doAcceptVizProduct(\''+oid+'\',\''+productId+'\',false)">✕ '+t('reject')+'</button></div>';
+    }else{
+      h+='<div style="display:flex;gap:7px;flex-wrap:wrap">'
+        +'<button class="btn btn-ok btn-sm" onclick="doAccept(\''+oid+'\',\''+field+'\',true)">✓ '+t('accept')+'</button>'
+        +'<button class="btn btn-no btn-sm" onclick="doAccept(\''+oid+'\',\''+field+'\',false)">✕ '+t('reject')+'</button></div>';
+    }
   }
   if(na.length){
     h+='<div style="margin-top:10px;font-size:10px;font-weight:800;color:var(--m);text-transform:uppercase">'+t('prevNotes')+'</div>';
     na.forEach(n=>{h+='<div class="ni" style="margin-top:5px"><div>'+esc(n.text)+'</div><div class="nm">'+fmtD(n.ts)+'</div></div>'});
   }
   if(status!=='YES'){
-    h+='<div style="margin-top:9px"><textarea id="nt_'+field+'" rows="2" style="width:100%;padding:8px 10px;border:1px solid var(--yw);border-radius:6px;font-size:12px;background:#fffef5;font-family:inherit" placeholder="'+t('noteReq')+'…"></textarea></div>';
+    h+='<div style="margin-top:9px"><textarea id="nt_'+field+'" rows="2" style="width:100%;padding:8px 10px;border:1px solid var(--yw);border-radius:6px;font-size:13px;background:#2a2700;color:#e8e8e8;font-family:inherit" placeholder="'+t('noteReq')+'…"></textarea></div>';
   }
   h+='</div>';return h;
 }
@@ -931,7 +953,7 @@ function doAccept(oid,field,accept){
         const r=await api({action:'accept',orderId:oid,field,accept:true});
         if(r.error)throw new Error(r.error);
         if(r.converted){toast(t('converted'));setTimeout(()=>showView('list'),1600)}
-        else{toast(t('accepted'));openOrder(oid)}
+        else{if(curOrder)curOrder[{cost:'costStatus',date:'dateStatus'}[field]]='YES';refreshView(oid);toast(t('accepted'));}
       }catch(e){toast(e.message,'error')}
     });
   }else{
@@ -939,7 +961,7 @@ function doAccept(oid,field,accept){
     const note=el?el.value.trim():'';
     if(!note){toast(t('noteReq'),'error');if(el)el.focus();return}
     (async()=>{
-      try{const r=await api({action:'accept',orderId:oid,field,accept:false,note});if(r.error)throw new Error(r.error);toast(t('sent'));openOrder(oid)}
+      try{const r=await api({action:'accept',orderId:oid,field,accept:false,note});if(r.error)throw new Error(r.error);if(curOrder)curOrder[{cost:'costStatus',date:'dateStatus'}[field]]='NO';refreshView(oid);toast(t('sent'));}
       catch(e){toast(e.message,'error')}
     })();
   }
@@ -947,55 +969,79 @@ function doAccept(oid,field,accept){
 async function sendNote(oid){
   const el=document.getElementById('nTxt');const txt=el?el.value.trim():'';
   if(!txt)return;
-  try{const r=await api({action:'addNote',orderId:oid,text:txt});if(r.error)throw new Error(r.error);toast(t('sent'));openOrder(oid)}
+  try{const r=await api({action:'addNote',orderId:oid,text:txt});if(r.error)throw new Error(r.error);if(curOrder){if(!curOrder.clientNotes)curOrder.clientNotes=[];curOrder.clientNotes.push({text:txt,ts:new Date().toISOString(),by:'?'});}refreshView(oid);toast(t('sent'));}
   catch(e){toast(e.message,'error')}
 }
 async function sendComplaint(oid){
   const el=document.getElementById('cTxt');const txt=el?el.value.trim():'';
   if(!txt)return;
-  try{const r=await api({action:'addComplaint',orderId:oid,text:txt});if(r.error)throw new Error(r.error);toast(t('sent'));openOrder(oid)}
+  try{const r=await api({action:'addComplaint',orderId:oid,text:txt});if(r.error)throw new Error(r.error);if(curOrder){if(!curOrder.complaint)curOrder.complaint=[];curOrder.complaint.push({text:txt,files:[],ts:new Date().toISOString(),by:'?'});}refreshView(oid);toast(t('sent'));}
   catch(e){toast(e.message,'error')}
 }
 async function handleUp(inp,oid,cat){
   if(!inp.files.length)return;
-  toast('…');
-  for(const f of inp.files){ await uploadFile(f,oid,cat) }
-  toast(t('uploaded')); openOrder(oid);
+  const _files=Array.from(inp.files);
+  showProgress(t('clickUpload')||'Wysyłanie...');
+  try{
+    const results=[];
+    for(let _i=0;_i<_files.length;_i++){
+      const r=await uploadFileWithProgress(_files[_i],oid,cat,function(pct){
+        setProgress(((_i+pct/100)/_files.length)*100,(_i+1)+'/'+_files.length+' — '+Math.round(pct)+'%');
+      });
+      if(r&&r.file)results.push(r.file);
+    }
+    hideProgress();
+    if(curOrder&&results.length){
+      const arrC=['attachments','paymentConf'];
+      results.forEach(function(fi){
+        if(arrC.indexOf(cat)!==-1){if(!curOrder[cat])curOrder[cat]=[];curOrder[cat].push(fi);}
+        else curOrder[cat]=fi;
+      });
+      refreshView(oid);
+    }
+    toast(t('uploaded'));
+  }catch(e){hideProgress();toast(e.message,'error')}
 }
 // Próg: powyżej 3MB base64 wysyłamy fragmentami (szybciej i bez timeoutów)
-const CHUNK_THRESHOLD = 3000000;
-const CHUNK_SIZE = 80000;
+const CHUNK_THRESHOLD = 4000000;
+const CHUNK_SIZE = 200000;
 
-function uploadFile(file,oid,cat){
-  return new Promise((res,rej)=>{
-    const r=new FileReader();
-    r.onload=async function(){
+function uploadFileWithProgress(file,oid,cat,onProgress){
+  return new Promise(function(res,rej){
+    const fr=new FileReader();
+    fr.onload=async function(){
       try{
-        const b64=r.result.split(',')[1];
+        const b64=fr.result.split(',')[1];
         const meta={fileName:file.name,mimeType:file.type||'application/octet-stream',orderId:oid,fileCategory:cat};
         if(b64.length<=CHUNK_THRESHOLD){
+          if(onProgress)onProgress(40);
           const out=await apiPost(Object.assign({action:'uploadClientFile',base64:b64},meta));
           if(out&&out.error)throw new Error(out.error);
+          if(onProgress)onProgress(100);
           res(out);
         }else{
-          res(await uploadChunked(b64,meta));
+          res(await uploadChunkedProgress(b64,meta,'uploadClientFile',onProgress));
         }
       }catch(e){rej(e)}
     };
-    r.onerror=rej; r.readAsDataURL(file);
+    fr.onerror=rej;fr.readAsDataURL(file);
   });
 }
+function uploadFile(file,oid,cat){return uploadFileWithProgress(file,oid,cat,null);}
 
-async function uploadChunked(b64,meta){
+async function uploadChunkedProgress(b64,meta,action,onProgress){
+  action=action||'uploadClientFile';
   const uploadId='u'+Date.now()+Math.floor(Math.random()*1e6);
   const total=Math.ceil(b64.length/CHUNK_SIZE);
   for(let i=0;i<total;i++){
     const chunk=b64.substr(i*CHUNK_SIZE,CHUNK_SIZE);
     const out=await apiPost({action:'uploadChunk',uploadId,chunkIndex:i,chunk});
     if(out&&out.error)throw new Error(out.error);
+    if(onProgress)onProgress(Math.round(((i+1)/total)*85));
   }
   const fin=await apiPost(Object.assign({action:'uploadFinish',uploadId,totalChunks:total},meta));
   if(fin&&fin.error)throw new Error(fin.error);
+  if(onProgress)onProgress(100);
   return fin;
 }
 

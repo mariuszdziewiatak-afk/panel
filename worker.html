@@ -113,6 +113,11 @@ table.otbl{width:100%;border-collapse:collapse;font-size:0.8125rem}
 
 /* MISC */
 .pwd-card{background:#2a2700;border:2px solid var(--yw);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.prog-wrap{position:fixed;bottom:16px;right:16px;background:var(--bk2);border:1px solid var(--b);border-radius:10px;padding:12px 16px;z-index:1001;min-width:220px;box-shadow:0 4px 16px rgba(0,0,0,.5)}
+.prog-label{font-size:12px;color:#ccc;margin-bottom:7px;font-weight:600}
+.prog-bar{height:7px;background:#333;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:var(--yw);border-radius:4px;transition:width .15s ease}
+.prog-sub{font-size:10px;color:#888;margin-top:5px;text-align:right}
 .toast{position:fixed;bottom:16px;right:16px;padding:12px 18px;border-radius:var(--r);font-size:0.875rem;z-index:1000;color:#fff;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.4)}
 .loading{display:flex;justify-content:center;padding:36px}
 .spinner{width:28px;height:28px;border:3px solid var(--b);border-top-color:var(--yw);border-radius:50%;animation:sp .6s linear infinite}
@@ -738,7 +743,7 @@ function renderVizProducts(o){
       h+='<strong style="font-size:14px">'+esc(p.name)+'</strong>';
       h+='<div style="display:flex;align-items:center;gap:8px">';
       h+='<span style="font-size:12px;font-weight:700;'+stCls+'">'+stTxt+'</span>';
-      h+='<button class="btn btn-no btn-sm" data-delproduct="'+pid+'" onclick="deleteVizProduct(this.dataset.delproduct)">✕</button>';
+      h+='<button class="btn btn-no btn-sm" data-pid="'+pid+'" data-pname="'+esc(p.name)+'" onclick="deleteVizProduct(this.dataset.pid,this.dataset.pname)">✕</button>';
       h+='</div></div>';
       if(p.files&&p.files.length){
         h+='<div class="fl" style="margin-bottom:8px">'+p.files.map(function(f){return '<a class="fc" href="'+esc(f.viewUrl||f.url||'#')+'" target="_blank">📎 '+esc(f.name)+'</a>';}).join('')+'</div>';
@@ -764,28 +769,43 @@ async function addVizProduct(){
   try{
     const r=await api({action:'addVizProduct',orderId:curId,productName:name.trim()});
     if(r.error)throw new Error(r.error);
-    toast(t('saved'));openOrder(curId);
+    if(curOrder&&r.products){curOrder.vizProducts=r.products;patchSection('vizSection',renderVizProducts(curOrder));}
+    toast(t('saved'));silentRefresh();
   }catch(e){toast(e.message,'error')}
 }
 
 async function deleteVizProduct(productId,productName){
-  if(!confirm('Usunąć produkt "'+productName+'"?'))return;
+  if(!confirm('Usunąć produkt "'+(productName||productId)+'"?'))return;
   try{
     const r=await api({action:'deleteVizProduct',orderId:curId,productId});
     if(r.error)throw new Error(r.error);
-    toast(t('saved'));openOrder(curId);
+    if(curOrder&&r.products){
+      curOrder.vizProducts=r.products;
+      const vizEl=document.getElementById('vizSection');
+      if(vizEl)vizEl.innerHTML=renderVizProducts(curOrder);
+    }
+    toast(t('saved'));
   }catch(e){toast(e.message,'error')}
 }
 
 async function handleVizProductUp(inp,productId){
   if(!inp.files.length)return;
-  toast('…');
+  const _files=Array.from(inp.files);
+  showProgress(t('vizSec')+' (0/'+_files.length+')');
   try{
-    for(const f of inp.files){
-      await uploadOneVizProduct(f,productId);
+    for(let _i=0;_i<_files.length;_i++){
+      const result=await uploadOneWithProgress(_files[_i],'vizProductFile',function(pct){
+        setProgress(((_i+pct/100)/_files.length)*100,(_i+1)+'/'+_files.length+' — '+Math.round(pct)+'%');
+      },{productId:productId});
+      if(result&&result.file&&curOrder){
+        const prods=curOrder.vizProducts||[];
+        const p=prods.find(function(x){return x.id===productId});
+        if(p){if(!p.files)p.files=[];p.files.push(result.file);}
+        patchSection('vizSection',renderVizProducts(curOrder));
+      }
     }
-    toast(t('uploaded'));openOrder(curId);
-  }catch(e){toast(e.message,'error')}
+    hideProgress();toast(t('uploaded'));silentRefresh();
+  }catch(e){hideProgress();toast(e.message,'error')}
 }
 
 function uploadOneVizProduct(file,productId){
@@ -870,13 +890,91 @@ async function saveOrder(){
   }catch(e){toast(e.message,'error')}
 }
 
+// ── Lokalny patch + cichy refresh ──
+function silentRefresh(){
+  api({action:'getOrder',orderId:curId}).then(function(r){if(r.success)curOrder=r.order;}).catch(function(){});
+}
+function patchSection(id,html){var e=document.getElementById(id);if(e)e.innerHTML=html;}
+
 // CHUNK UPLOAD
-const CHUNK_THRESHOLD=3000000,CHUNK_SIZE=80000;
+
+// ── Pasek postępu ──
+let _progEl=null;
+function showProgress(label){
+  hideProgress();
+  const d=document.createElement('div');
+  d.className='prog-wrap';d.id='_prog';
+  d.innerHTML='<div class="prog-label">'+label+'</div><div class="prog-bar"><div class="prog-fill" id="_pf" style="width:0%"></div></div><div class="prog-sub" id="_ps">0%</div>';
+  document.body.appendChild(d);_progEl=d;
+}
+function setProgress(pct,sub){
+  const f=document.getElementById('_pf');const s=document.getElementById('_ps');
+  if(f)f.style.width=Math.round(pct)+'%';
+  if(s)s.textContent=(sub||Math.round(pct)+'%');
+}
+function hideProgress(){const e=document.getElementById('_prog');if(e)e.remove();_progEl=null;}
+
+const CHUNK_THRESHOLD=4000000,CHUNK_SIZE=200000;
 async function handleUp(inp,field){
   if(!inp.files.length)return;
-  toast('…');
-  try{for(const f of inp.files){await uploadOne(f,field)}toast(t('uploaded'));openOrder(curId)}catch(e){toast(e.message,'error')}
+  const _files=Array.from(inp.files);
+  showProgress(t('clickUpload')+' (0/'+_files.length+')');
+  try{
+    const results=[];
+    for(let _i=0;_i<_files.length;_i++){
+      const r=await uploadOneWithProgress(_files[_i],field,function(pct){
+        setProgress(((_i+pct/100)/_files.length)*100,(_i+1)+'/'+_files.length+' — '+Math.round(pct)+'%');
+      });
+      if(r&&r.file)results.push(r.file);
+    }
+    hideProgress();
+    if(curOrder&&results.length){
+      const arr=['attachments','paymentConf','prodPhotos','trackingFile'];
+      results.forEach(function(fi){
+        if(arr.indexOf(field)!==-1){if(!curOrder[field])curOrder[field]=[];curOrder[field].push(fi);}
+        else curOrder[field]=fi;
+      });
+      renderDetail(curOrder);
+    }
+    toast(t('uploaded'));silentRefresh();
+  }catch(e){hideProgress();toast(e.message,'error')}
 }
+
+async function _doUpload(b64, meta, onProgress){
+  if(b64.length<=CHUNK_THRESHOLD){
+    if(onProgress)onProgress(40);
+    const out=await apiPost(Object.assign({action:'uploadWorkerFile',base64:b64},meta));
+    if(out&&out.error)throw new Error(out.error);
+    if(onProgress)onProgress(100);
+    return out;
+  }
+  const uploadId='u'+Date.now()+(Math.random()*1e6|0);
+  const total=Math.ceil(b64.length/CHUNK_SIZE);
+  for(let i=0;i<total;i++){
+    const out=await apiPost({action:'uploadChunk',uploadId,chunkIndex:i,chunk:b64.substr(i*CHUNK_SIZE,CHUNK_SIZE)});
+    if(out&&out.error)throw new Error(out.error);
+    if(onProgress)onProgress(Math.round(((i+1)/total)*85));
+  }
+  const fin=await apiPost(Object.assign({action:'uploadFinish',uploadId,totalChunks:total},meta));
+  if(fin&&fin.error)throw new Error(fin.error);
+  if(onProgress)onProgress(100);
+  return fin;
+}
+
+function uploadOneWithProgress(file, field, onProgress, extraMeta){
+  return new Promise(function(res,rej){
+    const fr=new FileReader();
+    fr.onload=async function(){
+      try{
+        const b64=fr.result.split(',')[1];
+        const meta=Object.assign({fileName:file.name,mimeType:file.type||'application/octet-stream',orderId:curId,fileCategory:field},extraMeta||{});
+        res(await _doUpload(b64,meta,onProgress));
+      }catch(e){rej(e)}
+    };
+    fr.onerror=rej;fr.readAsDataURL(file);
+  });
+}
+
 function uploadOne(file,field){
   return new Promise((res,rej)=>{
     const r=new FileReader();
@@ -916,7 +1014,14 @@ async function addWorkerComplaint(){
     const r=await api({action:'addComplaint',orderId:curId,text:txt});
     if(r.error)throw new Error(r.error);
     for(const f of wCompFiles){await uploadOne(f,'complaintFiles')}
-    toast(t('sent'));wCompFiles=[];openOrder(curId);
+    if(curOrder){
+      if(!curOrder.complaint)curOrder.complaint=[];
+      curOrder.complaint.push({text:txt,files:[],ts:new Date().toISOString(),by:userName});
+      patchSection('complaintSection',noteList(curOrder.complaint,'ni-comp'));
+      const ct=document.getElementById('compTxt');if(ct)ct.value='';
+      const cfl=document.getElementById('compFL');if(cfl)cfl.innerHTML='';
+    }
+    toast(t('sent'));wCompFiles=[];silentRefresh();
   }catch(e){toast(e.message,'error')}
 }
 
@@ -925,7 +1030,14 @@ async function addNote(type){
   const txt=el?el.value.trim():'';if(!txt)return;
   try{
     const r=await api({action:type==='team'?'addTeamNote':'addClientNotif',orderId:curId,text:txt});
-    if(r.error)throw new Error(r.error);toast(t('sent'));openOrder(curId);
+    if(r.error)throw new Error(r.error);
+    const note={text:txt,ts:new Date().toISOString(),by:userName};
+    if(curOrder){
+      if(type==='team'){if(!curOrder.teamNotes)curOrder.teamNotes=[];curOrder.teamNotes.push(note);patchSection('teamNotesSection',noteList(curOrder.teamNotes,'ni-team'));}
+      else{if(!curOrder.clientNotifs)curOrder.clientNotifs=[];curOrder.clientNotifs.push(note);patchSection('clientNotifsSection',noteList(curOrder.clientNotifs,'ni-notif'));}
+      el.value='';
+    }
+    toast(t('sent'));silentRefresh();
   }catch(e){toast(e.message,'error')}
 }
 

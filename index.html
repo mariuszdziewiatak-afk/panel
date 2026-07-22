@@ -201,7 +201,9 @@ let mustChangePwd = false, cfmCb = null;
 let cl = localStorage.getItem('s55_lang') || 'pl';
 let allOrders = [], sortCol = 'dateCreated', sortDir = 'desc';
 let canCreateOrders = false;
-let ordersLoaded = false; // czy mamy już świeże dane (np. z logowania/init)
+let ordersLoaded = false;
+let curOrder = null;
+let curOrderId = null;
 
 /* ============================================================
    TRANSLATIONS
@@ -236,7 +238,7 @@ pl:{
   confirmYes:'Tak, akceptuję', confirmNo:'Anuluj',
   converted:'✅ Wszystko zaakceptowane — zlecenie przeszło do realizacji!',
   // actions
-  addNote:'Wyślij wiadomość', sendComplaint:'Zgłoś reklamację',
+  addNote:'Wyślij wiadomość', sendComplaint:'Zgłoś reklamację', addFiles:'Dodaj pliki (opcjonalnie)',
   created:'Zlecenie zostało utworzone', sent:'Wysłano', uploaded:'Plik przesłany',
   error:'Błąd', descReq:'Podaj opis zlecenia',
   // settings
@@ -271,7 +273,7 @@ en:{
   confirmTitle:'Confirm approval', confirmMsg:'This cannot be undone. Are you sure?',
   confirmYes:'Yes, I approve', confirmNo:'Cancel',
   converted:'✅ All approved — order moved to production!',
-  addNote:'Send message', sendComplaint:'Submit complaint',
+  addNote:'Send message', sendComplaint:'Submit complaint', addFiles:'Add files (optional)',
   created:'Order has been created', sent:'Sent', uploaded:'File uploaded',
   error:'Error', descReq:'Please provide a description',
   settings:'Settings', changePwd:'Change password', oldPwd:'Current password',
@@ -305,7 +307,7 @@ de:{
   confirmTitle:'Freigabe bestätigen', confirmMsg:'Dies kann nicht rückgängig gemacht werden. Sind Sie sicher?',
   confirmYes:'Ja, ich akzeptiere', confirmNo:'Abbrechen',
   converted:'✅ Alles freigegeben — Auftrag in Produktion!',
-  addNote:'Nachricht senden', sendComplaint:'Reklamation senden',
+  addNote:'Nachricht senden', sendComplaint:'Reklamation senden', addFiles:'Dateien hinzufügen (optional)',
   created:'Auftrag wurde erstellt', sent:'Gesendet', uploaded:'Datei hochgeladen',
   error:'Fehler', descReq:'Bitte Beschreibung angeben',
   settings:'Einstellungen', changePwd:'Passwort ändern', oldPwd:'Aktuelles Passwort',
@@ -739,8 +741,10 @@ function silentRefresh(oid){
   api({action:'getOrder',orderId:oid}).then(function(r){if(r.success){curOrder=r.order;}}).catch(function(){});
 }
 function refreshView(oid){
-  // Natychmiastowy re-render z lokalnych danych + cichy sync z serwerem
-  if(curOrder) renderDetail(curOrder);
+  if(curOrder){
+    const el=document.getElementById('vDetail');
+    if(el) renderDetail(curOrder,el);
+  }
   silentRefresh(oid);
 }
 
@@ -751,6 +755,8 @@ async function openOrder(id){
   try{
     const r=await api({action:'getOrder',orderId:id});
     if(r.error)throw new Error(r.error);
+    curOrder=r.order;
+    curOrderId=id;
     renderDetail(r.order,el);
   }catch(e){el.innerHTML='<button class="btn btn-o btn-sm" onclick="showView(\'list\')">'+t('back')+'</button><div class="card" style="margin-top:10px;color:var(--no)">'+esc(e.message)+'</div>'}
 }

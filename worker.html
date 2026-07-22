@@ -689,7 +689,7 @@ function renderDetail(o){
     +upBox('trackingFile')+'</div>';
 
   // FILES
-  h+=renderVizProducts(o);
+  h+='<div id="vizSection">'+renderVizProducts(o)+'</div>';
   h+=upSec('💰 '+t('costSec'),'costFile',o.costFile?[o.costFile]:[]);
   h+=upSec('📸 '+t('photoSec'),'prodPhotos',o.prodPhotos);
   h+=upSec('🧾 '+t('invSec'),'invoiceFile',o.invoiceFile?[o.invoiceFile]:[]);
@@ -707,7 +707,7 @@ function renderDetail(o){
 
   // CLIENT NOTIFS
   h+='<div class="card"><div class="ch">📢 '+t('clientNotifs')+'</div>'
-    +noteList(o.clientNotifs||[],'ni-notif')
+    +'<div id="clientNotifsSection">'+noteList(o.clientNotifs||[],'ni-notif')+'</div>'
     +'<div style="margin-top:10px"><div class="fg"><textarea id="cNote" rows="2" placeholder="'+t('sendToClient')+'…"></textarea></div>'
     +'<button class="btn btn-p btn-sm" onclick="addNote(\'client\')">'+t('sendToClient')+'</button></div></div>';
 
@@ -781,8 +781,7 @@ async function deleteVizProduct(productId,productName){
     if(r.error)throw new Error(r.error);
     if(curOrder&&r.products){
       curOrder.vizProducts=r.products;
-      const vizEl=document.getElementById('vizSection');
-      if(vizEl)vizEl.innerHTML=renderVizProducts(curOrder);
+      patchSection('vizSection',renderVizProducts(curOrder));
     }
     toast(t('saved'));
   }catch(e){toast(e.message,'error')}
@@ -1013,16 +1012,28 @@ async function addWorkerComplaint(){
   try{
     const r=await api({action:'addComplaint',orderId:curId,text:txt});
     if(r.error)throw new Error(r.error);
-    for(const f of wCompFiles){await uploadOne(f,'complaintFiles')}
+    // Najpierw dodaj wpis reklamacji
+    const newComp={text:txt,files:[],ts:new Date().toISOString(),by:userName};
+    if(curOrder){if(!curOrder.complaint)curOrder.complaint=[];curOrder.complaint.push(newComp);}
+    // Upload załączników z paskiem postępu
+    if(wCompFiles.length){
+      showProgress(t('addComplaintFiles'));
+      for(let i=0;i<wCompFiles.length;i++){
+        setProgress((i/wCompFiles.length)*100,(i+1)+'/'+wCompFiles.length);
+        const res=await uploadOneWithProgress(wCompFiles[i],'complaintFiles',function(pct){
+          setProgress(((i+pct/100)/wCompFiles.length)*100,(i+1)+'/'+wCompFiles.length+' — '+Math.round(pct)+'%');
+        });
+        if(res&&res.file) newComp.files.push(res.file);
+      }
+      hideProgress();
+    }
     if(curOrder){
-      if(!curOrder.complaint)curOrder.complaint=[];
-      curOrder.complaint.push({text:txt,files:[],ts:new Date().toISOString(),by:userName});
       patchSection('complaintSection',noteList(curOrder.complaint,'ni-comp'));
       const ct=document.getElementById('compTxt');if(ct)ct.value='';
       const cfl=document.getElementById('compFL');if(cfl)cfl.innerHTML='';
     }
     toast(t('sent'));wCompFiles=[];silentRefresh();
-  }catch(e){toast(e.message,'error')}
+  }catch(e){hideProgress();toast(e.message,'error')}
 }
 
 async function addNote(type){

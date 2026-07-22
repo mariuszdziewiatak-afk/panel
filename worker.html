@@ -712,7 +712,7 @@ function renderDetail(o){
   // COMPLAINTS
   h+='<div class="card"><div class="ch">⚠️ '+t('complaints')+'</div>'+noteList(o.complaint||[],'ni-comp');
   h+='<div style="margin-top:10px"><div class="fg"><textarea id="compTxt" rows="2" placeholder="'+t('complaint')+'"></textarea></div>';
-  h+='<div class="fuz" onclick="document.getElementById(\'compF\').click()">📎 '+t('addComplaintFiles')+'<input type="file" id="compF" multiple accept="image/*,.pdf" onchange="handleCompChange(this)"></div>';
+  h+='<label for="compF" class="fuz" style="display:block;cursor:pointer">📎 '+t('addComplaintFiles')+'<input type="file" id="compF" style="display:none" multiple accept="image/*,.pdf" onchange="handleCompChange(this)"></label>';
   h+='<div class="fl" id="compFL" style="margin-top:6px"></div>';
   h+='<button class="btn btn-no btn-sm" style="margin-top:8px" onclick="addWorkerComplaint()">'+t('addComplaintBtn')+'</button>';
   h+='</div></div>';
@@ -745,7 +745,8 @@ function renderVizProducts(o){
       }else{
         h+='<p style="color:var(--m);font-size:12px;margin-bottom:6px">'+t('noFiles')+'</p>';
       }
-      h+='<div class="fuz" data-vpid="'+pid+'" onclick="this.querySelector(\"input\").click()">📎 '+t('clickUpload')+'<input type="file" multiple data-vpid="'+pid+'" onchange="handleVizProductUp(this,this.dataset.vpid)"></div>';
+      const inputId='vup_'+pid;
+      h+='<label for="'+inputId+'" class="fuz" style="display:block;cursor:pointer">📎 '+t('clickUpload')+'<input type="file" id="'+inputId+'" multiple style="display:none" data-vpid="'+pid+'" onchange="handleVizProductUp(this,this.dataset.vpid)"></label>';
       if(p.notes&&p.notes.length){
         h+='<div style="margin-top:8px">';
         p.notes.forEach(function(n){h+='<div class="ni ni-comp"><div>'+esc(n.text)+'</div><div class="nm">'+fmtDT(n.ts)+' · '+esc(n.by||'')+'</div></div>';});
